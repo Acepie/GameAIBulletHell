@@ -1,3 +1,4 @@
+// Data class representing a rooms with doors on each side
 public class Room {
 
   boolean[] doors;

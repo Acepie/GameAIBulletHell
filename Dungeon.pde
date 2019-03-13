@@ -1,5 +1,7 @@
 import java.util.Random;
+import java.util.PriorityQueue;
 
+// Represents game dungeon with several different rooms
 public class Dungeon {
   public static final int DUNGEONSIZE = 7;
   public static final int TILESIZE = 130;
@@ -14,15 +16,15 @@ public class Dungeon {
   final float BREAKRATE = .3;
   Random rng = new Random(); 
 
-  Room[][] dungeon;
+  Room[][] rooms;
 
   public Dungeon() {
-    dungeon = new Room[DUNGEONSIZE][DUNGEONSIZE];
+    rooms = new Room[DUNGEONSIZE][DUNGEONSIZE];
     generateRooms(CENTER, CENTER, 0, 0);
     breakWalls();
   }
 
-  // Draws the dungeon
+  // Draws the rooms
   public void draw() {
     background(#000000);
     strokeWeight(1);
@@ -34,7 +36,7 @@ public class Dungeon {
         int left = x * TILESIZE;
         int right = (x + 1) * TILESIZE;
 
-        Room r = dungeon[x][y];
+        Room r = rooms[x][y];
 
         if (r != null) {
           fill(#FFFFFF);
@@ -60,11 +62,53 @@ public class Dungeon {
     }
   }
 
+  // Gets the tile at the given x y coordinate
+  public Tile getNearestTile(int x, int y) {
+    return new Tile(x / TILESIZE, y / TILESIZE);
+  }
+
+  // Uses A* to compute path from start to end through dungeon
+  public ArrayList<Tile> pathTo(Tile start, Tile end) {
+    PriorityQueue<TileNode> worklist = new PriorityQueue<TileNode>();
+
+    HashMap<Tile, TileNode> soFar = new HashMap<Tile, TileNode>();
+    soFar.put(start, new TileNode(start, 0.0, null));
+
+    worklist.add(new TileNode(start, start.distance(end), null));
+    while(!worklist.isEmpty()) {
+      TileNode cur = worklist.poll();
+      Tile t = cur.t;
+
+      if (cur.prev != null) {
+        double realCost = soFar.get(cur.prev).cost + t.distance(cur.prev);
+        if (soFar.get(t) == null || (soFar.get(t).cost > realCost)) {
+          soFar.put(t, new TileNode(t, realCost, cur.prev));
+        } else {
+          continue;
+        }
+      }
+
+      if (t.equals(end)) {
+        return pathFromCosts(soFar, t);
+      }
+
+      Room r = rooms[t.x][t.y];
+      for (int i = 0; i < 4; ++i) {
+        if (r.doors[i]) {
+          Tile next = nextRoom(t.x, t.y, i);
+          worklist.add(new TileNode(next, cur.cost + next.distance(end), t));
+        }
+      }
+    }
+
+    return new ArrayList<Tile>();
+  }
+
   // Creates a room at the given location and attempts to randomly expand neighbors
   void generateRooms(int x, int y, int depth, int prev) {
     Room r = new Room();
 
-    dungeon[x][y] = r;
+    rooms[x][y] = r;
     if (depth != 0) {
       r.doors[prev] = true;
     }
@@ -74,18 +118,18 @@ public class Dungeon {
         continue;
       }
 
-      PVector newRoomCoord = nextRoom(x, y, i);
+      Tile newRoomCoord = nextRoom(x, y, i);
       if (outOfBounds(newRoomCoord)) {
         continue;
       }
 
-      Room newRoom = dungeon[(int) newRoomCoord.x][(int) newRoomCoord.y];
+      Room newRoom = rooms[newRoomCoord.x][newRoomCoord.y];
       if (newRoom != null || depth + 1 > MAXDEPTH) {
         continue;
       } else if (rng.nextFloat() < ROOMRATE) {
         int rev = inverseDir(i);
         r.doors[i] = true;
-        generateRooms((int) newRoomCoord.x, (int) newRoomCoord.y, depth + 1, rev);
+        generateRooms(newRoomCoord.x, newRoomCoord.y, depth + 1, rev);
       }
     }
   }
@@ -94,19 +138,19 @@ public class Dungeon {
   void breakWalls() {
     for (int x = 0; x < DUNGEONSIZE - 1; ++x) {
       for (int y = 0; y < DUNGEONSIZE - 1; ++y) {
-        Room r = dungeon[x][y];
+        Room r = rooms[x][y];
         if (r == null) {
           continue;
         }
 
-        if (!r.doors[RIGHT] && dungeon[x + 1][y] != null && rng.nextFloat() < BREAKRATE) {
+        if (!r.doors[RIGHT] && rooms[x + 1][y] != null && rng.nextFloat() < BREAKRATE) {
           r.doors[RIGHT] = true;
-          dungeon[x + 1][y].doors[LEFT] = true;
+          rooms[x + 1][y].doors[LEFT] = true;
         }
 
-        if (!r.doors[BOT] && dungeon[x][y + 1] != null && rng.nextFloat() < BREAKRATE) {
+        if (!r.doors[BOT] && rooms[x][y + 1] != null && rng.nextFloat() < BREAKRATE) {
           r.doors[BOT] = true;
-          dungeon[x][y + 1].doors[TOP] = true;
+          rooms[x][y + 1].doors[TOP] = true;
         }
       }
     }
@@ -127,8 +171,8 @@ public class Dungeon {
   }
 
   // Gets the room next to the given one in the given direction
-  PVector nextRoom(int x, int y, int dir) {
-    PVector res = new PVector(x, y);
+  Tile nextRoom(int x, int y, int dir) {
+    Tile res = new Tile(x, y);
     switch (dir) {
       case LEFT:
         res.x = x - 1;
@@ -148,7 +192,20 @@ public class Dungeon {
   }
 
   // Checks a room is out of bounds
-  boolean outOfBounds(PVector room) {
+  boolean outOfBounds(Tile room) {
     return room.x < 0 || room.x >= DUNGEONSIZE || room.y < 0 || room.y >= DUNGEONSIZE;
+  }
+
+  // Compute path to end based backtracking using costs so far
+  ArrayList<Tile> pathFromCosts(HashMap<Tile, TileNode> soFar, Tile end) {
+    ArrayList<Tile> path = new ArrayList<Tile>();
+    TileNode curNode = soFar.get(end);
+    while (curNode.prev != null) {
+      path.add(0, curNode.t);
+      curNode = soFar.get(curNode.prev);
+    }
+    path.add(0, curNode.t);
+
+    return path;
   }
 }
