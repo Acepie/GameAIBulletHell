@@ -63,12 +63,12 @@ public class Dungeon {
   }
 
   // Gets the tile at the given x y coordinate
-  public Tile getNearestTile(int x, int y) {
-    return new Tile(x / TILESIZE, y / TILESIZE);
+  public Tile getNearestTile(double x, double y) {
+    return new Tile((int) (x / TILESIZE), (int) (y / TILESIZE));
   }
 
   // Uses A* to compute path from start to end through dungeon
-  public ArrayList<Tile> pathTo(Tile start, Tile end) {
+  public ArrayList<PVector> pathTo(Tile start, Tile end) {
     PriorityQueue<TileNode> worklist = new PriorityQueue<TileNode>();
 
     HashMap<Tile, TileNode> soFar = new HashMap<Tile, TileNode>();
@@ -101,7 +101,7 @@ public class Dungeon {
       }
     }
 
-    return new ArrayList<Tile>();
+    return new ArrayList<PVector>();
   }
 
   // Creates a room at the given location and attempts to randomly expand neighbors
@@ -197,15 +197,20 @@ public class Dungeon {
   }
 
   // Compute path to end based backtracking using costs so far
-  ArrayList<Tile> pathFromCosts(HashMap<Tile, TileNode> soFar, Tile end) {
-    ArrayList<Tile> path = new ArrayList<Tile>();
+  ArrayList<PVector> pathFromCosts(HashMap<Tile, TileNode> soFar, Tile end) {
+    ArrayList<PVector> path = new ArrayList<PVector>();
     TileNode curNode = soFar.get(end);
     while (curNode.prev != null) {
-      path.add(0, curNode.t);
+      path.add(0, tileToPosition(curNode.t));
       curNode = soFar.get(curNode.prev);
     }
-    path.add(0, curNode.t);
+    path.add(0, tileToPosition(curNode.t));
 
     return path;
+  }
+
+  // Converts from tile position to map position
+  PVector tileToPosition(Tile t) {
+    return new PVector(t.x * TILESIZE + TILESIZE / 2, t.y * TILESIZE + TILESIZE / 2);
   }
 }
