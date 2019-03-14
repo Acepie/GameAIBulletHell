@@ -4,7 +4,7 @@ import java.util.PriorityQueue;
 // Represents game dungeon with several different rooms
 public class Dungeon {
   public static final int DUNGEONSIZE = 7;
-  public static final int TILESIZE = 130;
+  public static final int TILESIZE = 100;
   public static final int TOTALSIZE = DUNGEONSIZE * TILESIZE;
   final int CENTER = DUNGEONSIZE / 2;
   final int MAXDEPTH = DUNGEONSIZE;
