@@ -16,20 +16,31 @@ void draw() {
     dungeon = new Dungeon();
     enemy = new Enemy(Dungeon.TOTALSIZE / 2, Dungeon.TOTALSIZE / 2);
   }
-
-  enemy.update();
+  
+  enemy.update(player.position);
+  enemy_follows_player();
 
   dungeon.draw();
   enemy.draw();
-  
   player.draw();
+
 }
 
-void mouseReleased() {
-  Tile t = dungeon.getNearestTile(mouseX, mouseY);
-  if (dungeon.rooms[t.x][t.y] != null) {
-    Tile start = dungeon.getNearestTile(enemy.position.x, enemy.position.y);
-    enemy.setPath(dungeon.pathTo(start, t));
+void enemy_follows_player() {
+  Tile t = dungeon.getNearestTile(player.position.x, player.position.y);
+  Tile start = dungeon.getNearestTile(enemy.position.x, enemy.position.y);
+  
+  if (t.equals(start)) return;
+  
+  if (!enemy.path.isEmpty()) {
+    PVector last = enemy.path.get(enemy.path.size() - 1);
+    if (dungeon.getNearestTile(last.x, last.y).equals(t)) return;
+  }
+  
+  if (dungeon.rooms[t.x][t.y] != null) { 
+    ArrayList<PVector> path = dungeon.pathTo(start, t);
+    path.remove(0); // first tile is where enemy is located
+    enemy.setPath(path);
   }
 }
 

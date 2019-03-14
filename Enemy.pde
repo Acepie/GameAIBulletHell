@@ -40,7 +40,7 @@ public class Enemy {
     line(position.x, position.y, position.x + cos(rotation) * SIZE / 2, position.y + sin(rotation) * SIZE / 2);
   }
 
-  public void update() {
+  public void update(PVector player_position) {
     if (!path.isEmpty()) {
       PVector next = path.get(0);
       if (position.dist(next) < TARGET_RADIUS || (path.size() > 1 && position.dist(next) < SLOW_RADIUS)) {
@@ -49,6 +49,9 @@ public class Enemy {
         move(next);
         steer(next);
       }
+    } else {
+      move(player_position);
+      steer(player_position);
     }
   }
 

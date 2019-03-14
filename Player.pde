@@ -1,6 +1,6 @@
 public class Player {
   final int SIZE = 10;
-  final int MAX_SPEED = 3;
+  final int MAX_SPEED = 10;
   
   PVector position;
   
