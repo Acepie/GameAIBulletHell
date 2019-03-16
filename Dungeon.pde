@@ -104,6 +104,15 @@ public class Dungeon {
     return new ArrayList<PVector>();
   }
 
+  // Gets the position at the center of a random tile
+  public PVector getRandomTile() {
+    Tile t = new Tile(rng.nextInt(DUNGEONSIZE), rng.nextInt(DUNGEONSIZE));
+    while (rooms[t.x][t.y] == null) {
+      t = new Tile(rng.nextInt(DUNGEONSIZE), rng.nextInt(DUNGEONSIZE));
+    }
+    return tileToPosition(t);
+  }
+
   // Creates a room at the given location and attempts to randomly expand neighbors
   void generateRooms(int x, int y, int depth, int prev) {
     Room r = new Room();
@@ -204,7 +213,6 @@ public class Dungeon {
       path.add(0, tileToPosition(curNode.t));
       curNode = soFar.get(curNode.prev);
     }
-    path.add(0, tileToPosition(curNode.t));
 
     return path;
   }

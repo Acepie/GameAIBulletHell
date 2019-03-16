@@ -17,8 +17,8 @@ public class Enemy {
 
   ArrayList<PVector> path;
 
-  public Enemy (int x, int y) {
-    position = new PVector(x, y);
+  public Enemy (PVector position) {
+    this.position = position;
     velocity = new PVector(0, 0);
     this.path = new ArrayList<PVector>();
   }
@@ -28,6 +28,7 @@ public class Enemy {
   }
 
   public void draw() {
+    // TODO: delete debug path
     fill(#00FF00);
     stroke(#FFFFFF);
     for (PVector t : path) {
