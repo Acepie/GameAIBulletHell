@@ -41,12 +41,9 @@ void enemy_follows_player(Enemy enemy) {
   // Don't recalculate path if player and enemy are in same tile
   if (t.equals(start)) return;
   
-  // TODO: Delete this if statement once wall collision is done
-  if (dungeon.rooms[t.x][t.y] != null && dungeon.rooms[start.x][start.y] != null) { 
-    ArrayList<PVector> path = dungeon.pathTo(start, t);
-    path.remove(path.size() - 1); // last tile is not needed since player is there
-    enemy.setPath(path);
-  }
+  ArrayList<PVector> path = dungeon.pathTo(start, t);
+  path.remove(path.size() - 1); // last tile is not needed since player is there
+  enemy.setPath(path);
 }
 
 void keyPressed() {
