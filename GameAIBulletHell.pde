@@ -19,13 +19,7 @@ void settings() {
   init();
 }
 
-void draw() {
-
-  // TODO: delete random room generator for final game
-  if (keyPressed && key == 'r') {
-    init();
-  }
-  
+void draw() {  
   for (Enemy enemy : enemies) {
     enemy.update(player.position);
     enemy_follows_player(enemy);
@@ -56,7 +50,10 @@ void enemy_follows_player(Enemy enemy) {
 }
 
 void keyPressed() {
-  if (key == CODED) {
+  // TODO: delete random room generator for final game
+  if (key == 'r') {
+    init();
+  } else if (key == CODED) {
     player.move(keyCode);
   }
 }
