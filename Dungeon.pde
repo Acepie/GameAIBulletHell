@@ -66,6 +66,11 @@ public class Dungeon {
   public Tile getNearestTile(double x, double y) {
     return new Tile((int) (x / TILESIZE), (int) (y / TILESIZE));
   }
+  
+  // Gets the room at the given x y coordinate
+  public Room getNearestRoom(double x, double y) {
+    return rooms[(int) (x / TILESIZE)][(int) (y / TILESIZE)];
+  }
 
   // Uses A* to compute path from start to end through dungeon
   public ArrayList<PVector> pathTo(Tile start, Tile end) {
@@ -164,6 +169,24 @@ public class Dungeon {
       }
     }
   }
+  
+  boolean canMove(PVector from, PVector to) {
+    if (outOfBounds(to.x, to.y)) return false;
+    
+    Tile current = getNearestTile(from.x, from.y);
+    Tile next = getNearestTile(to.x, to.y);
+
+    return current.equals(next) || (!outOfBounds(next) && getNearestRoom(from.x, from.y).doors[determineDirection(current, next)]);
+  }
+  
+  // ASSUME: the two tiles are adjacent and not identical
+  int determineDirection(Tile from, Tile to) {
+    if (from.x == to.x && from.y < to.y) return this.BOT;
+    if (from.x == to.x && from.y > to.y) return this.TOP;
+    if (from.x < to.x && from.y == to.y) return this.RIGHT;
+    if (from.x > to.x && from.y == to.y) return this.LEFT;
+    return -1;
+  }
 
   // Given a direction finds the inverse direction
   int inverseDir(int dir) {
@@ -203,6 +226,11 @@ public class Dungeon {
   // Checks a room is out of bounds
   boolean outOfBounds(Tile room) {
     return room.x < 0 || room.x >= DUNGEONSIZE || room.y < 0 || room.y >= DUNGEONSIZE;
+  }
+  
+  // Checks if a coordinate is out of bounds
+  boolean outOfBounds(float x, float y) {
+    return x < 0 || x >= TOTALSIZE || y < 0 || y >= TOTALSIZE;
   }
 
   // Compute path to end based backtracking using costs so far

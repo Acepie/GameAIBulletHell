@@ -38,7 +38,7 @@ void enemy_follows_player(Enemy enemy) {
   Tile t = dungeon.getNearestTile(player.position.x, player.position.y);
   Tile start = dungeon.getNearestTile(enemy.position.x, enemy.position.y);
   
-  // Don't both if player and enemy in same tile
+  // Don't recalculate path if player and enemy are in same tile
   if (t.equals(start)) return;
   
   // TODO: Delete this if statement once wall collision is done
@@ -53,7 +53,7 @@ void keyPressed() {
   // TODO: delete random room generator for final game
   if (key == 'r') {
     init();
-  } else if (key == CODED) {
+  } else if (key == CODED && dungeon.canMove(player.position, player.getNextPosition(keyCode))) {
     player.move(keyCode);
   }
 }

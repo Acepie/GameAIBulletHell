@@ -5,25 +5,27 @@ public class Player {
   PVector position;
   
   public Player(int x, int y) {
-    position = new PVector(x, y);
+    this.position = new PVector(x, y);
   }
   
+  // move this player in the given direction
   public void move(int key_code) {
+    this.position = getNextPosition(key_code);
+  }
+  
+  // calculate where this player would be if it moved in the given direction
+  public PVector getNextPosition(int key_code) {
     switch(key_code) {
       case UP:
-        position = new PVector(position.x, position.y - MAX_SPEED);
-        break;
+        return new PVector(position.x, position.y - MAX_SPEED);
       case DOWN:
-        position = new PVector(position.x, position.y + MAX_SPEED);
-        break;
+        return new PVector(position.x, position.y + MAX_SPEED);
       case LEFT:
-        position = new PVector(position.x - MAX_SPEED, position.y);
-        break;
+        return new PVector(position.x - MAX_SPEED, position.y);
       case RIGHT:
-        position = new PVector(position.x + MAX_SPEED, position.y);
-        break;
+        return new PVector(position.x + MAX_SPEED, position.y);
       default:
-        return;
+        return this.position.copy();
     }
   }
   
