@@ -4,7 +4,7 @@ public class Enemy {
   final int SLOW_RADIUS = 40;
   final float TARGET_ROT_RADIUS = PI/30;
   final float SLOW_ROT_RADIUS = PI/15;
-  final int MAX_SPEED = 3;
+  final int MAX_SPEED = 2;
   final int MAX_ACCELERATION = 1; 
   final float MAX_ANGULAR_SPEED = PI/20;
   final float MAX_ANGULAR_ACCELERATION = PI/40;
