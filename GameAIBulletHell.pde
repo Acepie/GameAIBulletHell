@@ -27,13 +27,16 @@ void draw() {
   if (dungeon.canMove(player.position, player.getNextPosition())) {
     player.move();
   }
+  
+  //for (PVector o : dungeon.obstacles) {
+  // 
+  //}
 
   dungeon.draw();
   for (Enemy enemy : enemies) {
     enemy.draw();
   }
   player.draw();
-
 }
 
 // Generates the path the enemy should follow if necessary

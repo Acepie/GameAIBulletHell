@@ -10,17 +10,29 @@ public class Enemy {
   final float MAX_ANGULAR_ACCELERATION = PI/40;
   final int AVOID_RADIUS = 250;
   final float AVOID_FORCE = 4000;
+  final float MAX_HEALTH = 80;
   PVector position;
   PVector velocity;
   float rotation = 0;
   float rotationalVelocity = 0;
 
   ArrayList<PVector> path;
+  
+  private float health;
 
   public Enemy (PVector position) {
     this.position = position;
-    velocity = new PVector(0, 0);
+    this.velocity = new PVector(0, 0);
     this.path = new ArrayList<PVector>();
+    this.health = MAX_HEALTH;
+  }
+  
+  public void loseHealth(float damage) {
+    health = health - damage < 0 ? 0 : health - damage;
+  }
+  
+  public boolean isDead() {
+    return health == 0;
   }
 
   public void setPath(ArrayList<PVector> path) {
@@ -28,13 +40,6 @@ public class Enemy {
   }
 
   public void draw() {
-    // TODO: delete debug path
-    fill(#00FF00);
-    stroke(#FFFFFF);
-    for (PVector t : path) {
-      ellipse(t.x, t.y, SIZE, SIZE);
-    }
-
     fill(#DDDDDD);
     stroke(#000000);
     ellipse(position.x, position.y, SIZE, SIZE);

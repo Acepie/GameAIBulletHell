@@ -1,13 +1,25 @@
 public class Player {
   final int SIZE = 10;
   final int MAX_SPEED = 5;
+  final int MAX_HEALTH = 100;
   
   PVector position;
   PVector velocity;
   
+  private float health;
+  
   public Player(int x, int y) {
     this.position = new PVector(x, y);
-    velocity = new PVector(0, 0);
+    this.velocity = new PVector(0, 0);
+    this.health = MAX_HEALTH;
+  }
+  
+  public void loseHealth(float damage) {
+    health = health - damage < 0 ? 0 : health - damage;
+  }
+  
+  public boolean isDead() {
+    return health == 0;
   }
   
   // move this player based on current velocity
@@ -53,7 +65,12 @@ public class Player {
   }
   
   public void draw() {
-    fill(#0000ff);
+    if (isDead()) {
+      fill(#bababa);
+    } else {
+      fill(#0000ff);
+    }
+    
     ellipse(position.x, position.y, SIZE, SIZE);
   }
 }

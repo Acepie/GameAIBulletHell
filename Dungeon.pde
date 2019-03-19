@@ -6,14 +6,9 @@ public class Dungeon {
   public static final int DUNGEONSIZE = 7;
   public static final int TILESIZE = 100;
   public static final int TOTALSIZE = DUNGEONSIZE * TILESIZE;
-  public static final int OBSTACLESIZE = 6;
   public static final int OBSTACLEGAP = TILESIZE / 3;
   final int CENTER = DUNGEONSIZE / 2;
   final int MAXDEPTH = DUNGEONSIZE;
-  final int LEFT = 0;
-  final int RIGHT = 1;
-  final int TOP = 2;
-  final int BOT = 3;
   final float ROOMRATE = .8;
   final float BREAKRATE = .3;
   final float OBSTACLERATE = .5;
@@ -21,11 +16,11 @@ public class Dungeon {
   Random rng = new Random(); 
 
   Room[][] rooms;
-  ArrayList<PVector> obstacles;
+  ArrayList<Obstacle> obstacles;
 
   public Dungeon() {
     rooms = new Room[DUNGEONSIZE][DUNGEONSIZE];
-    obstacles = new ArrayList<PVector>();
+    obstacles = new ArrayList<Obstacle>();
     generateRooms(CENTER, CENTER, 0, 0);
     generateObstacles();
     breakWalls();
@@ -39,41 +34,17 @@ public class Dungeon {
     // Draw the rooms
     for (int x = 0; x < DUNGEONSIZE; ++x) {
       for (int y = 0; y < DUNGEONSIZE; ++y) {
-        int top = y * TILESIZE;
-        int bot = (y + 1) * TILESIZE;
-        int left = x * TILESIZE;
-        int right = (x + 1) * TILESIZE;
-
         Room r = rooms[x][y];
 
         if (r != null) {
-          fill(#FFFFFF);
-          stroke(#FFFFFF);
-          rect(left, top, TILESIZE, TILESIZE);
-          
-          stroke(#FF0000);
-          strokeWeight(2);
-          if (!r.doors[LEFT]) {
-            line(left, top, left, bot);
-          }
-          if (!r.doors[RIGHT]) {
-            line(right, top, right, bot);
-          }
-          if (!r.doors[TOP]) {
-            line(left, top, right, top);
-          }
-          if (!r.doors[BOT]) {
-            line(left, bot, right, bot);
-          }
+          r.draw(x, y, TILESIZE);
         }
       }
     }
     
     // Draw the obstacles
-    for (PVector o : obstacles) {
-      fill(#f4424b);
-      stroke(#f4424b);
-      circle(o.x, o.y, OBSTACLESIZE);
+    for (Obstacle o : obstacles) {
+      o.draw();
     }
   }
 
@@ -184,14 +155,14 @@ public class Dungeon {
           continue;
         }
 
-        if (!r.doors[RIGHT] && rooms[x + 1][y] != null && rng.nextFloat() < BREAKRATE) {
-          r.doors[RIGHT] = true;
-          rooms[x + 1][y].doors[LEFT] = true;
+        if (!r.doors[Room.RIGHT] && rooms[x + 1][y] != null && rng.nextFloat() < BREAKRATE) {
+          r.doors[Room.RIGHT] = true;
+          rooms[x + 1][y].doors[Room.LEFT] = true;
         }
 
-        if (!r.doors[BOT] && rooms[x][y + 1] != null && rng.nextFloat() < BREAKRATE) {
-          r.doors[BOT] = true;
-          rooms[x][y + 1].doors[TOP] = true;
+        if (!r.doors[Room.BOT] && rooms[x][y + 1] != null && rng.nextFloat() < BREAKRATE) {
+          r.doors[Room.BOT] = true;
+          rooms[x][y + 1].doors[Room.TOP] = true;
         }
       }
     }
@@ -207,7 +178,7 @@ public class Dungeon {
           for (int o = 0; o < obstacle_count; ++o) {
             int x_offset = rng.nextInt(TILESIZE);
             int y_offset = rng.nextInt(TILESIZE);
-            obstacles.add(new PVector(pos.x + x_offset, pos.y + y_offset));
+            obstacles.add(new Obstacle(pos.x + x_offset, pos.y + y_offset));
           }
         }
       }
@@ -216,28 +187,28 @@ public class Dungeon {
   
   // ASSUME: the two tiles are adjacent and not identical
   int determineDirection(Tile from, Tile to) {
-    if (from.x == to.x && from.y < to.y) return this.BOT;   // ↓
-    if (from.x < to.x && from.y < to.y) return this.BOT;    // ↘
-    if (from.x == to.x && from.y > to.y) return this.TOP;   // ↑
-    if (from.x > to.x && from.y > to.y) return this.TOP;    // ↖   
-    if (from.x < to.x && from.y == to.y) return this.RIGHT; // →
-    if (from.x < to.x && from.y > to.y) return this.RIGHT;  // ↗
-    if (from.x > to.x && from.y == to.y) return this.LEFT;  // ←
-    if (from.x > to.x && from.y < to.y) return this.LEFT;   // ↙
+    if (from.x == to.x && from.y < to.y) return Room.BOT;   // ↓
+    if (from.x < to.x && from.y < to.y) return Room.BOT;    // ↘
+    if (from.x == to.x && from.y > to.y) return Room.TOP;   // ↑
+    if (from.x > to.x && from.y > to.y) return Room.TOP;    // ↖   
+    if (from.x < to.x && from.y == to.y) return Room.RIGHT; // →
+    if (from.x < to.x && from.y > to.y) return Room.RIGHT;  // ↗
+    if (from.x > to.x && from.y == to.y) return Room.LEFT;  // ←
+    if (from.x > to.x && from.y < to.y) return Room.LEFT;   // ↙
     return -1;
   }
 
   // Given a direction finds the inverse direction
   int inverseDir(int dir) {
     switch (dir) {
-      case LEFT:
-        return RIGHT;
-      case RIGHT:
-        return LEFT;
-      case BOT:
-        return TOP;
+      case Room.LEFT:
+        return Room.RIGHT;
+      case Room.RIGHT:
+        return Room.LEFT;
+      case Room.BOT:
+        return Room.TOP;
       default:
-        return BOT;
+        return Room.BOT;
     }
   }
 
@@ -245,16 +216,16 @@ public class Dungeon {
   Tile nextRoom(int x, int y, int dir) {
     Tile res = new Tile(x, y);
     switch (dir) {
-      case LEFT:
+      case Room.LEFT:
         res.x = x - 1;
         break;
-      case RIGHT:
+      case Room.RIGHT:
         res.x = x + 1;
         break;
-      case TOP:
+      case Room.TOP:
         res.y = y - 1;
         break;
-      case BOT:
+      case Room.BOT:
         res.y = y + 1;
         break;
     }
