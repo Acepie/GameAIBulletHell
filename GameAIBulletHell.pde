@@ -28,9 +28,16 @@ void draw() {
     player.move();
   }
   
-  //for (PVector o : dungeon.obstacles) {
-  // 
-  //}
+  for (Obstacle o : dungeon.obstacles) {
+    if (o.collision(player.position, Player.SIZE)) {
+      player.loseHealth(o.getDamage());
+    }
+    for (Enemy enemy : enemies) {
+      if (o.collision(enemy.position, Enemy.SIZE)) {
+        enemy.loseHealth(o.getDamage());
+      }
+    }
+  }
 
   dungeon.draw();
   for (Enemy enemy : enemies) {

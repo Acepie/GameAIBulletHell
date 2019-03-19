@@ -1,5 +1,5 @@
 public class Enemy {
-  final int SIZE = 10;
+  public static final int SIZE = 10;
   final int TARGET_RADIUS = 10;
   final int SLOW_RADIUS = 40;
   final float TARGET_ROT_RADIUS = PI/30;
@@ -11,7 +11,7 @@ public class Enemy {
   final int AVOID_RADIUS = 250;
   final float AVOID_FORCE = 4000;
   final float MAX_HEALTH = 80;
-  PVector position;
+  public PVector position;
   PVector velocity;
   float rotation = 0;
   float rotationalVelocity = 0;
@@ -40,7 +40,11 @@ public class Enemy {
   }
 
   public void draw() {
-    fill(#DDDDDD);
+    if (isDead()) {
+      fill(#000000);
+    } else {
+      fill(#DDDDDD);
+    }
     stroke(#000000);
     ellipse(position.x, position.y, SIZE, SIZE);
     line(position.x, position.y, position.x + cos(rotation) * SIZE / 2, position.y + sin(rotation) * SIZE / 2);
