@@ -97,7 +97,7 @@ public class Dungeon {
 
       Room r = rooms[t.x][t.y];
       for (int i = 0; i < 4; ++i) {
-        if (r.doors[i]) {
+        if (r != null && r.doors[i]) { // TODO double check this r != null thing
           Tile next = nextRoom(t.x, t.y, i);
           worklist.add(new TileNode(next, cur.cost + next.distance(end), t));
         }

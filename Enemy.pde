@@ -8,14 +8,14 @@ public class Enemy {
   final int MAX_ACCELERATION = 1; 
   final float MAX_ANGULAR_SPEED = PI/20;
   final float MAX_ANGULAR_ACCELERATION = PI/40;
-  final int AVOID_RADIUS = 250;
-  final float AVOID_FORCE = 4000;
+  final int AVOID_RADIUS = 50;
+  final float AVOID_FORCE = 200;
   final float MAX_HEALTH = 80;
   public PVector position;
   PVector velocity;
   float rotation = 0;
   float rotationalVelocity = 0;
-  
+
   final int damage = 5; // how much damage this enemy deals
 
   ArrayList<PVector> path;
@@ -27,19 +27,19 @@ public class Enemy {
     this.path = new ArrayList<PVector>();
     this.health = new Health(MAX_HEALTH);
   }
-  
+
   public void loseHealth(float damage) {
     this.health.loseHealth(damage);
   }
-  
+
   boolean isInvulnerable() {
     return this.health.isInvulnerable();
   }
-  
+
   public boolean isDead() {
     return this.health.isDead();
   }
-  
+
   public int getDamage() {
     return this.damage;
   }
@@ -59,17 +59,17 @@ public class Enemy {
     line(position.x, position.y, position.x + cos(rotation) * SIZE / 2, position.y + sin(rotation) * SIZE / 2);
   }
 
-  public void update(PVector player_position) {
+  public void update(PVector player_position, ArrayList<Obstacle> obstacles) {
     if (!path.isEmpty()) {
       PVector next = path.get(0);
       if (position.dist(next) < TARGET_RADIUS || (path.size() > 1 && position.dist(next) < SLOW_RADIUS)) {
         path.remove(0);
       } else {
-        move(next);
+        move(next, obstacles);
         steer(next);
       }
     } else {
-      move(player_position);
+      move(player_position, obstacles);
       steer(player_position);
     }
   }
@@ -88,7 +88,7 @@ public class Enemy {
   }
 
   // Update position and velocity based on distance from target
-  void move(PVector target) {
+  void move(PVector target, ArrayList<Obstacle> obstacles) {
     PVector dir = PVector.sub(target, position);
     float dist = dir.mag();
 
@@ -107,6 +107,17 @@ public class Enemy {
     if (acceleration.mag() > MAX_ACCELERATION) {
       acceleration.normalize();
       acceleration.mult(MAX_ACCELERATION);
+    }
+
+    // avoid obstacles
+    for (Obstacle o : obstacles) { 
+      PVector o_dir = PVector.sub(this.position, o.position);
+      float distance = o_dir.mag();
+      if (distance < AVOID_RADIUS) {
+        float repulsionStrength = min(AVOID_FORCE / (distance * distance), MAX_ACCELERATION);
+        o_dir.normalize();
+        acceleration.add(o_dir.mult(repulsionStrength));
+      }
     }
 
     velocity = velocity.add(acceleration);
