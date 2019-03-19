@@ -1,11 +1,10 @@
-public class Actor {
+public class Health {
   final int INVULNERABILITY = 1000;
   
   private float health;
   private int last_hit;
   
-  
-  public Actor(float max_health) {
+  public Health(float max_health) {
     this.health = max_health;
     this.last_hit = 0;
   }

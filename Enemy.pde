@@ -15,27 +15,33 @@ public class Enemy {
   PVector velocity;
   float rotation = 0;
   float rotationalVelocity = 0;
+  
+  final int damage = 5; // how much damage this enemy deals
 
   ArrayList<PVector> path;
-  Actor actor;
+  private Health health;
 
   public Enemy (PVector position) {
     this.position = position;
     this.velocity = new PVector(0, 0);
     this.path = new ArrayList<PVector>();
-    this.actor = new Actor(MAX_HEALTH);
+    this.health = new Health(MAX_HEALTH);
   }
   
   public void loseHealth(float damage) {
-    this.actor.loseHealth(damage);
+    this.health.loseHealth(damage);
   }
   
   boolean isInvulnerable() {
-    return this.actor.isInvulnerable();
+    return this.health.isInvulnerable();
   }
   
   public boolean isDead() {
-    return this.actor.isDead();
+    return this.health.isDead();
+  }
+  
+  public int getDamage() {
+    return this.damage;
   }
 
   public void setPath(ArrayList<PVector> path) {

@@ -20,40 +20,61 @@ void settings() {
 }
 
 void draw() {  
+  ArrayList<Enemy> dead = new ArrayList<Enemy>();
   for (Enemy enemy : enemies) {
     enemy.update(player.position);
-    enemy_follows_player(enemy);
+    follow_player(enemy);
+    hurt_player(enemy);
+    
+    take_damage_from_obstacles(enemy);
+    if (enemy.isDead()) dead.add(enemy);
   }
+  enemies.removeAll(dead);
+
+  move_player();
+  take_damage_from_obstacles(player);
+
+  dungeon.draw();
+  player.draw();
+  for (Enemy enemy : enemies) {
+    enemy.draw();
+  }
+}
+
+void move_player() {
   if (dungeon.canMove(player.position, player.getNextPosition())) {
     player.move();
   }
-  
+}
+
+void take_damage_from_obstacles(Player player) {
   for (Obstacle o : dungeon.obstacles) {
     if (o.collision(player.position, Player.SIZE)) {
       player.loseHealth(o.getDamage());
     }
-    for (Enemy enemy : enemies) {
-      if (o.collision(enemy.position, Enemy.SIZE)) {
-        enemy.loseHealth(o.getDamage());
-      }
+  }
+}
+
+void take_damage_from_obstacles(Enemy enemy) {
+  for (Obstacle o : dungeon.obstacles) {
+    if (o.collision(enemy.position, Enemy.SIZE)) {
+      enemy.loseHealth(o.getDamage());
     }
   }
+}
 
-  dungeon.draw();
-  for (Enemy enemy : enemies) {
-    enemy.draw();
-  }
-  player.draw();
+void hurt_player(Enemy enemy) {
+  player.loseHealth(enemy.getDamage());
 }
 
 // Generates the path the enemy should follow if necessary
-void enemy_follows_player(Enemy enemy) {
+void follow_player(Enemy enemy) {
   Tile t = dungeon.getNearestTile(player.position.x, player.position.y);
   Tile start = dungeon.getNearestTile(enemy.position.x, enemy.position.y);
-  
+
   // Don't recalculate path if player and enemy are in same tile
   if (t.equals(start)) return;
-  
+
   ArrayList<PVector> path = dungeon.pathTo(start, t);
   path.remove(path.size() - 1); // last tile is not needed since player is there
   enemy.setPath(path);

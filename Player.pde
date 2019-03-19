@@ -5,24 +5,24 @@ public class Player {
   
   PVector position;
   PVector velocity;
-  Actor actor;
+  private Health health;
   
   public Player(int x, int y) {
     this.position = new PVector(x, y);
     this.velocity = new PVector(0, 0);
-    this.actor = new Actor(MAX_HEALTH);
+    this.health = new Health(MAX_HEALTH);
   }
   
   public void loseHealth(float damage) {
-    this.actor.loseHealth(damage);
+    this.health.loseHealth(damage);
   }
   
   boolean isInvulnerable() {
-    return this.actor.isInvulnerable();
+    return this.health.isInvulnerable();
   }
   
   public boolean isDead() {
-    return this.actor.isDead();
+    return this.health.isDead();
   }
   
   // move this player based on current velocity
@@ -76,6 +76,7 @@ public class Player {
       fill(#0000ff);
     }
     
+    stroke(#000000);
     ellipse(position.x, position.y, SIZE, SIZE);
   }
 }
