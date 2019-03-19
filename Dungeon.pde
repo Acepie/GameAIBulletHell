@@ -6,6 +6,8 @@ public class Dungeon {
   public static final int DUNGEONSIZE = 7;
   public static final int TILESIZE = 100;
   public static final int TOTALSIZE = DUNGEONSIZE * TILESIZE;
+  public static final int OBSTACLESIZE = 6;
+  public static final int OBSTACLEGAP = TILESIZE / 3;
   final int CENTER = DUNGEONSIZE / 2;
   final int MAXDEPTH = DUNGEONSIZE;
   final int LEFT = 0;
@@ -14,21 +16,27 @@ public class Dungeon {
   final int BOT = 3;
   final float ROOMRATE = .8;
   final float BREAKRATE = .3;
+  final float OBSTACLERATE = .5;
+  final int OBSTACLELIMIT = 4;
   Random rng = new Random(); 
 
   Room[][] rooms;
+  ArrayList<PVector> obstacles;
 
   public Dungeon() {
     rooms = new Room[DUNGEONSIZE][DUNGEONSIZE];
+    obstacles = new ArrayList<PVector>();
     generateRooms(CENTER, CENTER, 0, 0);
+    generateObstacles();
     breakWalls();
   }
 
-  // Draws the rooms
+  // Draws the dungeon
   public void draw() {
     background(#000000);
     strokeWeight(1);
     
+    // Draw the rooms
     for (int x = 0; x < DUNGEONSIZE; ++x) {
       for (int y = 0; y < DUNGEONSIZE; ++y) {
         int top = y * TILESIZE;
@@ -59,6 +67,13 @@ public class Dungeon {
           }
         }
       }
+    }
+    
+    // Draw the obstacles
+    for (PVector o : obstacles) {
+      fill(#f4424b);
+      stroke(#f4424b);
+      circle(o.x, o.y, OBSTACLESIZE);
     }
   }
 
@@ -182,12 +197,33 @@ public class Dungeon {
     }
   }
   
+  // Creates obstacles in random rooms in the dungeon 
+  void generateObstacles() {
+    for (int x = 0; x < DUNGEONSIZE; ++x) {
+      for (int y = 0; y < DUNGEONSIZE; ++y) {
+        if (rooms[x][y] != null && rng.nextFloat() < OBSTACLERATE) {
+          PVector pos = indexToTopLeft(x, y);
+          int obstacle_count = rng.nextInt(OBSTACLELIMIT);
+          for (int o = 0; o < obstacle_count; ++o) {
+            int x_offset = rng.nextInt(TILESIZE);
+            int y_offset = rng.nextInt(TILESIZE);
+            obstacles.add(new PVector(pos.x + x_offset, pos.y + y_offset));
+          }
+        }
+      }
+    }
+  }
+  
   // ASSUME: the two tiles are adjacent and not identical
   int determineDirection(Tile from, Tile to) {
-    if (from.x == to.x && from.y < to.y) return this.BOT;
-    if (from.x == to.x && from.y > to.y) return this.TOP;
-    if (from.x < to.x && from.y == to.y) return this.RIGHT;
-    if (from.x > to.x && from.y == to.y) return this.LEFT;
+    if (from.x == to.x && from.y < to.y) return this.BOT;   // ↓
+    if (from.x < to.x && from.y < to.y) return this.BOT;    // ↘
+    if (from.x == to.x && from.y > to.y) return this.TOP;   // ↑
+    if (from.x > to.x && from.y > to.y) return this.TOP;    // ↖   
+    if (from.x < to.x && from.y == to.y) return this.RIGHT; // →
+    if (from.x < to.x && from.y > to.y) return this.RIGHT;  // ↗
+    if (from.x > to.x && from.y == to.y) return this.LEFT;  // ←
+    if (from.x > to.x && from.y < to.y) return this.LEFT;   // ↙
     return -1;
   }
 
@@ -251,5 +287,9 @@ public class Dungeon {
   // Converts from tile position to map position
   PVector tileToPosition(Tile t) {
     return new PVector(t.x * TILESIZE + TILESIZE / 2, t.y * TILESIZE + TILESIZE / 2);
+  }
+  
+  PVector indexToTopLeft(int x, int y) {
+    return new PVector(x * TILESIZE, y * TILESIZE);
   }
 }
