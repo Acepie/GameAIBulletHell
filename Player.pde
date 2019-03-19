@@ -69,7 +69,7 @@ public class Player {
   
   public void draw() {
     if (isDead()) {
-      fill(#bababa);
+      fill(#000000);
     } else if (isInvulnerable()) {
       fill(#4c4cff);
     } else {

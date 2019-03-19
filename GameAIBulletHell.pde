@@ -22,7 +22,7 @@ void settings() {
 void draw() {  
   ArrayList<Enemy> dead = new ArrayList<Enemy>();
   for (Enemy enemy : enemies) {
-    enemy.update(player.position, dungeon.obstacles);
+    enemy.update(player.position, dungeon.obstacles, enemies);
     follow_player(enemy);
     hurt_player(enemy);
     

@@ -10,6 +10,8 @@ public class Enemy {
   final float MAX_ANGULAR_ACCELERATION = PI/40;
   final int AVOID_RADIUS = 50;
   final float AVOID_FORCE = 200;
+  final int CLUSTER_RADIUS = 20;
+  final float CLUSTER_FORCE = 100;
   final float MAX_HEALTH = 80;
   public PVector position;
   PVector velocity;
@@ -59,17 +61,17 @@ public class Enemy {
     line(position.x, position.y, position.x + cos(rotation) * SIZE / 2, position.y + sin(rotation) * SIZE / 2);
   }
 
-  public void update(PVector player_position, ArrayList<Obstacle> obstacles) {
+  public void update(PVector player_position, ArrayList<Obstacle> obstacles, ArrayList<Enemy> enemies) {
     if (!path.isEmpty()) {
       PVector next = path.get(0);
       if (position.dist(next) < TARGET_RADIUS || (path.size() > 1 && position.dist(next) < SLOW_RADIUS)) {
         path.remove(0);
       } else {
-        move(next, obstacles);
+        move(next, obstacles, enemies);
         steer(next);
       }
     } else {
-      move(player_position, obstacles);
+      move(player_position, obstacles, enemies);
       steer(player_position);
     }
   }
@@ -88,7 +90,7 @@ public class Enemy {
   }
 
   // Update position and velocity based on distance from target
-  void move(PVector target, ArrayList<Obstacle> obstacles) {
+  void move(PVector target, ArrayList<Obstacle> obstacles, ArrayList<Enemy> enemies) {
     PVector dir = PVector.sub(target, position);
     float dist = dir.mag();
 
@@ -111,17 +113,29 @@ public class Enemy {
 
     // avoid obstacles
     for (Obstacle o : obstacles) { 
-      PVector o_dir = PVector.sub(this.position, o.position);
-      float distance = o_dir.mag();
-      if (distance < AVOID_RADIUS) {
-        float repulsionStrength = min(AVOID_FORCE / (distance * distance), MAX_ACCELERATION);
-        o_dir.normalize();
-        acceleration.add(o_dir.mult(repulsionStrength));
+      avoidThingAtPosition(o.position, acceleration, AVOID_FORCE, AVOID_RADIUS);
+    }
+    
+    // avoid other enemies
+    for (Enemy e : enemies) { 
+      if (e.equals(this)) {
+        continue;
       }
+      avoidThingAtPosition(e.position, acceleration, CLUSTER_FORCE, CLUSTER_RADIUS);
     }
 
     velocity = velocity.add(acceleration);
     position = position.add(velocity);
+  }
+  
+  void avoidThingAtPosition(PVector pos, PVector acceleration, float force, int radius) {
+    PVector dir = PVector.sub(this.position, pos);
+      float distance = dir.mag();
+    if (distance < radius) {
+      float repulsionStrength = min(force / (distance * distance), MAX_ACCELERATION);
+      dir.normalize();
+      acceleration.add(dir.mult(repulsionStrength));
+    }
   }
 
   // Update rotation and rotational velocity to face velocity
