@@ -17,22 +17,25 @@ public class Enemy {
   float rotationalVelocity = 0;
 
   ArrayList<PVector> path;
-  
-  private float health;
+  Actor actor;
 
   public Enemy (PVector position) {
     this.position = position;
     this.velocity = new PVector(0, 0);
     this.path = new ArrayList<PVector>();
-    this.health = MAX_HEALTH;
+    this.actor = new Actor(MAX_HEALTH);
   }
   
   public void loseHealth(float damage) {
-    health = health - damage < 0 ? 0 : health - damage;
+    this.actor.loseHealth(damage);
+  }
+  
+  boolean isInvulnerable() {
+    return this.actor.isInvulnerable();
   }
   
   public boolean isDead() {
-    return health == 0;
+    return this.actor.isDead();
   }
 
   public void setPath(ArrayList<PVector> path) {

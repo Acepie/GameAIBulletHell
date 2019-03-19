@@ -2,34 +2,27 @@ public class Player {
   public static final int SIZE = 10;
   final int MAX_SPEED = 5;
   final int MAX_HEALTH = 100;
-  final int INVULNERABILITY = 2000;
   
   PVector position;
   PVector velocity;
-  
-  private float health;
-  int last_hit;
+  Actor actor;
   
   public Player(int x, int y) {
     this.position = new PVector(x, y);
     this.velocity = new PVector(0, 0);
-    this.health = MAX_HEALTH;
-    this.last_hit = 0;
-  }
-  
-  boolean isInvulnerable() {
-    return last_hit + INVULNERABILITY > millis();
+    this.actor = new Actor(MAX_HEALTH);
   }
   
   public void loseHealth(float damage) {
-    if (!isInvulnerable()) {
-      health = health - damage < 0 ? 0 : health - damage;
-      last_hit = millis();  
-    }
+    this.actor.loseHealth(damage);
+  }
+  
+  boolean isInvulnerable() {
+    return this.actor.isInvulnerable();
   }
   
   public boolean isDead() {
-    return health == 0;
+    return this.actor.isDead();
   }
   
   // move this player based on current velocity
