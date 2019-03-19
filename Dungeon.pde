@@ -71,6 +71,18 @@ public class Dungeon {
   public Room getNearestRoom(double x, double y) {
     return rooms[(int) (x / TILESIZE)][(int) (y / TILESIZE)];
   }
+  
+  // Determines if moving from one position to another is possible
+  boolean canMove(PVector from, PVector to) {
+    if (outOfBounds(to.x, to.y)) return false;
+    
+    Tile current = getNearestTile(from.x, from.y);
+    Tile next = getNearestTile(to.x, to.y);
+
+    if (getNearestRoom(from.x, from.y) == null || getNearestRoom(to.x, to.y) == null) return false;
+    
+    return current.equals(next) || (getNearestRoom(from.x, from.y).doors[determineDirection(current, next)]);
+  }
 
   // Uses A* to compute path from start to end through dungeon
   public ArrayList<PVector> pathTo(Tile start, Tile end) {
@@ -168,15 +180,6 @@ public class Dungeon {
         }
       }
     }
-  }
-  
-  boolean canMove(PVector from, PVector to) {
-    if (outOfBounds(to.x, to.y)) return false;
-    
-    Tile current = getNearestTile(from.x, from.y);
-    Tile next = getNearestTile(to.x, to.y);
-
-    return current.equals(next) || (!outOfBounds(next) && getNearestRoom(from.x, from.y).doors[determineDirection(current, next)]);
   }
   
   // ASSUME: the two tiles are adjacent and not identical

@@ -24,6 +24,9 @@ void draw() {
     enemy.update(player.position);
     enemy_follows_player(enemy);
   }
+  if (dungeon.canMove(player.position, player.getNextPosition())) {
+    player.move();
+  }
 
   dungeon.draw();
   for (Enemy enemy : enemies) {
@@ -50,7 +53,13 @@ void keyPressed() {
   // TODO: delete random room generator for final game
   if (key == 'r') {
     init();
-  } else if (key == CODED && dungeon.canMove(player.position, player.getNextPosition(keyCode))) {
-    player.move(keyCode);
+  } else if (key == CODED) {
+    player.arrowDown(keyCode);
+  }
+}
+
+void keyReleased() {
+  if (key == CODED) {
+    player.arrowUp(keyCode);
   }
 }
