@@ -34,6 +34,7 @@ void draw() {
   move_player();
   take_damage_from_obstacles(player);
 
+  background(#000000);
   dungeon.draw();
   player.draw();
   for (Enemy enemy : enemies) {
@@ -72,11 +73,10 @@ void follow_player(Enemy enemy) {
   Tile t = dungeon.getNearestTile(player.position.x, player.position.y);
   Tile start = dungeon.getNearestTile(enemy.position.x, enemy.position.y);
 
-  // Don't recalculate path if player and enemy are in same tile
-  if (t.equals(start)) return;
-
   ArrayList<PVector> path = dungeon.pathTo(start, t);
-  path.remove(path.size() - 1); // last tile is not needed since player is there
+  if (!path.isEmpty()) {
+    path.remove(path.size() - 1); // last tile is not needed since player is there
+  }
   enemy.setPath(path);
 }
 

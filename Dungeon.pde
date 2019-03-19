@@ -13,22 +13,27 @@ public class Dungeon {
   final float BREAKRATE = .3;
   final float OBSTACLERATE = .5;
   final int OBSTACLELIMIT = 4;
+  final int PITCOUNT = 5;
+  final int PITSIZE = 30;
+  final int MINPITDISTANCE = 80;
   Random rng = new Random(); 
 
   Room[][] rooms;
   ArrayList<Obstacle> obstacles;
+  ArrayList<Pit> pits;
 
   public Dungeon() {
     rooms = new Room[DUNGEONSIZE][DUNGEONSIZE];
     obstacles = new ArrayList<Obstacle>();
+    pits = new ArrayList<Pit>();
     generateRooms(CENTER, CENTER, 0, 0);
     generateObstacles();
+    generatePits();
     breakWalls();
   }
 
   // Draws the dungeon
   public void draw() {
-    background(#000000);
     strokeWeight(1);
     
     // Draw the rooms
@@ -45,6 +50,11 @@ public class Dungeon {
     // Draw the obstacles
     for (Obstacle o : obstacles) {
       o.draw();
+    }
+
+    // Draw pits
+    for (Pit p : pits) {
+      p.draw();
     }
   }
 
@@ -168,7 +178,7 @@ public class Dungeon {
     }
   }
   
-  // Creates obstacles in random rooms in the dungeon 
+  // Creates obstacles in random rooms in the dungeon
   void generateObstacles() {
     for (int x = 0; x < DUNGEONSIZE; ++x) {
       for (int y = 0; y < DUNGEONSIZE; ++y) {
@@ -183,6 +193,33 @@ public class Dungeon {
         }
       }
     }
+  }
+
+  // Create pits in random rooms in the dungeon
+  void generatePits() {
+    for (int i = 0; i < PITCOUNT; ++i) {
+      PVector loc = getRandomTile();
+      // Offset between -30 and 30 in x and y
+      PVector randomOff = new PVector(rng.nextInt(60) - 30, rng.nextInt(60) - 30);
+      loc.add(randomOff);
+      while (anyTooClose(loc)) {
+        loc = getRandomTile();
+        randomOff = new PVector(rng.nextInt(60) - 30, rng.nextInt(60) - 30);
+        loc.add(randomOff);
+      }
+      pits.add(new Pit(loc, PITSIZE));
+    }
+  }
+
+  // Checks if any pits are too close to a given location
+  boolean anyTooClose(PVector loc) {
+    for (Pit p : pits) {
+      if (p.position.dist(loc) < MINPITDISTANCE) {
+        return true;
+      }
+    }
+
+    return false;
   }
   
   // ASSUME: the two tiles are adjacent and not identical
@@ -260,6 +297,7 @@ public class Dungeon {
     return new PVector(t.x * TILESIZE + TILESIZE / 2, t.y * TILESIZE + TILESIZE / 2);
   }
   
+  // Gets top left corner position of room at given x y
   PVector indexToTopLeft(int x, int y) {
     return new PVector(x * TILESIZE, y * TILESIZE);
   }
