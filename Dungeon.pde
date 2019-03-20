@@ -69,7 +69,7 @@ public class Dungeon {
   }
   
   // Determines if moving from one position to another is possible
-  boolean canMove(PVector from, PVector to) {
+  public boolean canMove(PVector from, PVector to) {
     if (outOfBounds(to.x, to.y)) return false;
     
     Tile current = getNearestTile(from.x, from.y);
@@ -124,6 +124,17 @@ public class Dungeon {
       t = new Tile(rng.nextInt(DUNGEONSIZE), rng.nextInt(DUNGEONSIZE));
     }
     return tileToPosition(t);
+  }
+
+  // Checks if given position is within any pits
+  public boolean overPit(PVector pos) {
+    for (Pit p : pits) {
+      if (dist(pos.x, pos.y, p.position.x, p.position.y) < p.size) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   // Creates a room at the given location and attempts to randomly expand neighbors

@@ -2,6 +2,7 @@ public class Player {
   public static final int SIZE = 10;
   final int MAX_SPEED = 5;
   final int MAX_HEALTH = 100;
+  final float JUMP_POW = .2;
   
   PVector position;
   PVector velocity;
@@ -33,6 +34,13 @@ public class Player {
   // calculate where this player would be if it moved in the given direction
   public PVector getNextPosition() {
     return PVector.add(position, velocity);
+  }
+
+  // Attempt to jump
+  public void jump() {
+    if (position.z == 0 && velocity.z <= 0) {
+      velocity.z = JUMP_POW;
+    }
   }
 
   // Updates player velocity based on keys pressed
@@ -77,6 +85,7 @@ public class Player {
     }
     
     stroke(#000000);
-    ellipse(position.x, position.y, SIZE, SIZE);
+    float sizeToDraw = max(pow(SIZE, 1.0 / (1.0 + position.z / 4)), SIZE / 2.0);
+    ellipse(position.x, position.y, sizeToDraw, sizeToDraw);
   }
 }

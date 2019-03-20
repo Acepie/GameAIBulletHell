@@ -2,6 +2,7 @@ Dungeon dungeon;
 ArrayList<Enemy> enemies;
 Player player; 
 final int ENEMIESTOSPAWN = 3;
+final float GRAVITYSTRENGTH = .02;
 
 // Initialize game state
 void init() {
@@ -33,6 +34,7 @@ void draw() {
 
   move_player();
   take_damage_from_obstacles(player);
+  applyGravity(player.position, player.velocity);
 
   background(#000000);
   dungeon.draw();
@@ -45,6 +47,16 @@ void draw() {
 void move_player() {
   if (dungeon.canMove(player.position, player.getNextPosition())) {
     player.move();
+  }
+}
+
+// Applies gravity to velocity and resets z position to floor if appropriate
+void applyGravity(PVector position, PVector velocity) {
+  velocity.z -= GRAVITYSTRENGTH;
+  if (position.z <= 0 && !dungeon.overPit(position)) {
+    position.z = 0;
+  } else if (position.z <= 0) {
+    init();
   }
 }
 
@@ -84,6 +96,8 @@ void keyPressed() {
   // TODO: delete random room generator for final game
   if (key == 'r') {
     init();
+  } else if (key == ' ') {
+    player.jump();
   } else if (key == CODED) {
     player.arrowDown(keyCode);
   }
