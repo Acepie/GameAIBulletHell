@@ -6,7 +6,7 @@ public class Player {
   
   PVector position;
   PVector velocity;
-  private Health health;
+  Health health;
   
   public Player(int x, int y) {
     this.position = new PVector(x, y);

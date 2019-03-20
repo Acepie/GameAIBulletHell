@@ -21,7 +21,7 @@ public class Enemy {
   final int damage = 5; // how much damage this enemy deals
 
   ArrayList<PVector> path;
-  private Health health;
+  Health health;
 
   public Enemy (PVector position) {
     this.position = position;

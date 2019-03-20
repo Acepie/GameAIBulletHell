@@ -21,21 +21,26 @@ void settings() {
 }
 
 void draw() {  
+  // Update enemy states
   ArrayList<Enemy> dead = new ArrayList<Enemy>();
   for (Enemy enemy : enemies) {
     enemy.update(player.position, dungeon.obstacles, enemies);
     follow_player(enemy);
-    hurt_player(enemy);
+    if (player.position.dist(enemy.position) < Player.SIZE + Enemy.SIZE) {
+      player.loseHealth(enemy.getDamage());
+    }
     
-    take_damage_from_obstacles(enemy);
+    take_damage_from_obstacles(enemy.position, enemy.health);
     if (enemy.isDead()) dead.add(enemy);
   }
   enemies.removeAll(dead);
 
+  // Update player
   move_player();
-  take_damage_from_obstacles(player);
+  take_damage_from_obstacles(player.position, player.health);
   applyGravity(player.position, player.velocity);
 
+  // Drawing
   background(#000000);
   dungeon.draw();
   player.draw();
@@ -44,6 +49,7 @@ void draw() {
   }
 }
 
+// Attempts to apply player movement
 void move_player() {
   if (dungeon.canMove(player.position, player.getNextPosition())) {
     player.move();
@@ -60,24 +66,13 @@ void applyGravity(PVector position, PVector velocity) {
   }
 }
 
-void take_damage_from_obstacles(Player player) {
+// Apply damage to target healthpool when too close to obstacles
+void take_damage_from_obstacles(PVector position, Health health) {
   for (Obstacle o : dungeon.obstacles) {
-    if (o.collision(player.position, Player.SIZE)) {
-      player.loseHealth(o.getDamage());
+    if (o.collision(position, Enemy.SIZE)) {
+      health.loseHealth(o.getDamage());
     }
   }
-}
-
-void take_damage_from_obstacles(Enemy enemy) {
-  for (Obstacle o : dungeon.obstacles) {
-    if (o.collision(enemy.position, Enemy.SIZE)) {
-      enemy.loseHealth(o.getDamage());
-    }
-  }
-}
-
-void hurt_player(Enemy enemy) {
-  player.loseHealth(enemy.getDamage());
 }
 
 // Generates the path the enemy should follow if necessary
