@@ -76,7 +76,7 @@ void applyGravity(PVector position, PVector velocity) {
 // Apply damage to target healthpool when too close to obstacles
 void take_damage_from_obstacles(PVector position, Health health) {
   for (Obstacle o : dungeon.obstacles) {
-    if (o.collision(position, Enemy.SIZE)) {
+    if (o.collision(position, Enemy.SIZE / 2)) {
       health.loseHealth(o.getDamage());
     }
   }

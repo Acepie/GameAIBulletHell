@@ -9,7 +9,7 @@ public class Obstacle {
   }
   
   public boolean collision(PVector other, float radius) {
-    return dist(position.x, position.y, other.x, other.y) < radius + SIZE;
+    return dist(position.x, position.y, other.x, other.y) < radius + SIZE / 2;
   }
   
   public int getDamage() {
