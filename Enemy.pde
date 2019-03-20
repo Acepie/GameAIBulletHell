@@ -63,19 +63,24 @@ public class Enemy {
     line(position.x, position.y, position.x + cos(rotation) * SIZE / 2, position.y + sin(rotation) * SIZE / 2);
   }
 
-  public void update(PVector player_position, ArrayList<Obstacle> obstacles, ArrayList<Enemy> enemies, ArrayList<Integer> whiskerResult) {
+  // Determines next move and returns new position
+  public PVector update(PVector player_position, ArrayList<Obstacle> obstacles, ArrayList<Enemy> enemies, ArrayList<Integer> whiskerResult) {
     if (!path.isEmpty()) {
       PVector next = path.get(0);
       if (position.dist(next) < TARGET_RADIUS || (path.size() > 1 && position.dist(next) < SLOW_RADIUS)) {
         path.remove(0);
       } else {
-        move(next, obstacles, enemies, whiskerResult);
+        PVector pos = move(next, obstacles, enemies, whiskerResult);
         steer(next);
+        return pos;
       }
     } else {
-      move(player_position, obstacles, enemies, whiskerResult);
+      PVector pos = move(player_position, obstacles, enemies, whiskerResult);
       steer(player_position);
+      return pos;
     }
+
+    return null;
   }
 
   // Gets projected whisker points at 45 degree angles from current velocity
@@ -106,13 +111,13 @@ public class Enemy {
   }
 
   // Update position and velocity based on distance from target
-  void move(PVector target, ArrayList<Obstacle> obstacles, ArrayList<Enemy> enemies, ArrayList<Integer> whiskerResults) {
+  PVector move(PVector target, ArrayList<Obstacle> obstacles, ArrayList<Enemy> enemies, ArrayList<Integer> whiskerResults) {
     PVector dir = PVector.sub(target, position);
     float dist = dir.mag();
 
     // In range do not move
     if (dist < TARGET_RADIUS) {
-      return;
+      return null;
     }
 
     float targetSpeed = dist > SLOW_RADIUS ? MAX_SPEED : MAX_SPEED * dist / SLOW_RADIUS;
@@ -155,6 +160,18 @@ public class Enemy {
         case Room.TOP:
           acceleration.add(new PVector(0, -WALL_AVOID_FORCE));
           break;
+        case Room.TOPLEFT:
+          acceleration.add(new PVector(-WALL_AVOID_FORCE, -WALL_AVOID_FORCE));
+          break;
+        case Room.TOPRIGHT:
+          acceleration.add(new PVector(WALL_AVOID_FORCE, -WALL_AVOID_FORCE));
+          break;
+        case Room.BOTLEFT:
+          acceleration.add(new PVector(-WALL_AVOID_FORCE, WALL_AVOID_FORCE));
+          break;
+        case Room.BOTRIGHT:
+          acceleration.add(new PVector(WALL_AVOID_FORCE, WALL_AVOID_FORCE));
+          break;
       }
     }
 
@@ -164,7 +181,7 @@ public class Enemy {
     }
 
     velocity = velocity.add(acceleration);
-    position = position.add(velocity);
+    return PVector.add(position, velocity);
   }
   
   void avoidThingAtPosition(PVector pos, PVector acceleration, float force, int radius) {

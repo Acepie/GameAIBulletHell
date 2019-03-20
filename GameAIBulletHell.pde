@@ -28,7 +28,10 @@ void draw() {
     for (PVector wp : enemy.getWhiskeyPoints()) {
       whiskerResults.add(dungeon.getReflectingDirection(enemy.position, wp));
     }
-    enemy.update(player.position, dungeon.obstacles, enemies, whiskerResults);
+    PVector pos = enemy.update(player.position, dungeon.obstacles, enemies, whiskerResults);
+    if (pos != null && dungeon.canMove(enemy.position, pos)) {
+      enemy.position = pos;
+    }
     follow_player(enemy);
     if (player.position.dist(enemy.position) < Player.SIZE + Enemy.SIZE) {
       player.loseHealth(enemy.getDamage());

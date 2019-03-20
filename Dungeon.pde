@@ -148,7 +148,7 @@ public class Dungeon {
   // Checks if given position is within any pits
   public boolean overPit(PVector pos) {
     for (Pit p : pits) {
-      if (dist(pos.x, pos.y, p.position.x, p.position.y) < p.size) {
+      if (dist(pos.x, pos.y, p.position.x, p.position.y) < p.size / 2) {
         return true;
       }
     }
