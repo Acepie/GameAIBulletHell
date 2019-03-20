@@ -80,6 +80,24 @@ public class Dungeon {
     return current.equals(next) || (getNearestRoom(from.x, from.y).doors[determineDirection(current, next)]);
   }
 
+  // If moving from one point to another is blocked by a wall, return the direction to reflect. Otherwise returns -1
+  public int getReflectingDirection(PVector from, PVector to) {
+    if (outOfBounds(to.x, to.y)) return -1;
+    
+    Tile current = getNearestTile(from.x, from.y);
+    Tile next = getNearestTile(to.x, to.y);
+
+    if (getNearestRoom(from.x, from.y) == null || getNearestRoom(to.x, to.y) == null || current.equals(next)) return -1;
+
+    int dir = determineDirection(current, next);
+
+    if (!getNearestRoom(from.x, from.y).doors[dir]) {
+      return inverseDir(dir);
+    }
+    
+    return -1;
+  }
+
   // Uses A* to compute path from start to end through dungeon
   public ArrayList<PVector> pathTo(Tile start, Tile end) {
     PriorityQueue<TileNode> worklist = new PriorityQueue<TileNode>();

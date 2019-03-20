@@ -5,6 +5,7 @@ public class Enemy {
   final float TARGET_ROT_RADIUS = PI/30;
   final float SLOW_ROT_RADIUS = PI/15;
   final int MAX_SPEED = 2;
+  final int WHISKER_LENGTH = 20;
   final int MAX_ACCELERATION = 1; 
   final float MAX_ANGULAR_SPEED = PI/20;
   final float MAX_ANGULAR_ACCELERATION = PI/40;
@@ -12,6 +13,7 @@ public class Enemy {
   final float AVOID_FORCE = 200;
   final int CLUSTER_RADIUS = 20;
   final float CLUSTER_FORCE = 100;
+  final float WALL_AVOID_FORCE = MAX_ACCELERATION;
   final float MAX_HEALTH = 80;
   public PVector position;
   PVector velocity;
@@ -61,19 +63,33 @@ public class Enemy {
     line(position.x, position.y, position.x + cos(rotation) * SIZE / 2, position.y + sin(rotation) * SIZE / 2);
   }
 
-  public void update(PVector player_position, ArrayList<Obstacle> obstacles, ArrayList<Enemy> enemies) {
+  public void update(PVector player_position, ArrayList<Obstacle> obstacles, ArrayList<Enemy> enemies, ArrayList<Integer> whiskerResult) {
     if (!path.isEmpty()) {
       PVector next = path.get(0);
       if (position.dist(next) < TARGET_RADIUS || (path.size() > 1 && position.dist(next) < SLOW_RADIUS)) {
         path.remove(0);
       } else {
-        move(next, obstacles, enemies);
+        move(next, obstacles, enemies, whiskerResult);
         steer(next);
       }
     } else {
-      move(player_position, obstacles, enemies);
+      move(player_position, obstacles, enemies, whiskerResult);
       steer(player_position);
     }
+  }
+
+  // Gets projected whisker points at 45 degree angles from current velocity
+  public ArrayList<PVector> getWhiskeyPoints() {
+    ArrayList<PVector> points = new ArrayList<PVector>();
+    PVector dir = velocity.copy();
+    dir.normalize();
+    dir.mult(WHISKER_LENGTH);
+    dir.rotate(PI / 4);
+    points.add(PVector.add(dir, position));
+    dir.rotate(-PI / 2);
+    points.add(PVector.add(dir, position));
+
+    return points;
   }
 
   // converts radian amount to be between -PI and PI
@@ -90,7 +106,7 @@ public class Enemy {
   }
 
   // Update position and velocity based on distance from target
-  void move(PVector target, ArrayList<Obstacle> obstacles, ArrayList<Enemy> enemies) {
+  void move(PVector target, ArrayList<Obstacle> obstacles, ArrayList<Enemy> enemies, ArrayList<Integer> whiskerResults) {
     PVector dir = PVector.sub(target, position);
     float dist = dir.mag();
 
@@ -106,10 +122,6 @@ public class Enemy {
     targetVelocity = targetVelocity.mult(targetSpeed);
 
     PVector acceleration = targetVelocity.sub(velocity);
-    if (acceleration.mag() > MAX_ACCELERATION) {
-      acceleration.normalize();
-      acceleration.mult(MAX_ACCELERATION);
-    }
 
     // avoid obstacles
     for (Obstacle o : obstacles) { 
@@ -124,13 +136,40 @@ public class Enemy {
       avoidThingAtPosition(e.position, acceleration, CLUSTER_FORCE, CLUSTER_RADIUS);
     }
 
+    if (acceleration.mag() > MAX_ACCELERATION) {
+      acceleration.normalize();
+      acceleration.mult(MAX_ACCELERATION);
+    }
+
+    for (int wp : whiskerResults) {
+      switch (wp) {
+        case Room.LEFT:
+          acceleration.add(new PVector(-WALL_AVOID_FORCE, 0));
+          break;
+        case Room.RIGHT:
+          acceleration.add(new PVector(WALL_AVOID_FORCE, 0));
+          break;
+        case Room.BOT:
+          acceleration.add(new PVector(0, WALL_AVOID_FORCE));
+          break;
+        case Room.TOP:
+          acceleration.add(new PVector(0, -WALL_AVOID_FORCE));
+          break;
+      }
+    }
+
+    if (acceleration.mag() > MAX_ACCELERATION) {
+      acceleration.normalize();
+      acceleration.mult(MAX_ACCELERATION);
+    }
+
     velocity = velocity.add(acceleration);
     position = position.add(velocity);
   }
   
   void avoidThingAtPosition(PVector pos, PVector acceleration, float force, int radius) {
     PVector dir = PVector.sub(this.position, pos);
-      float distance = dir.mag();
+    float distance = dir.mag();
     if (distance < radius) {
       float repulsionStrength = min(force / (distance * distance), MAX_ACCELERATION);
       dir.normalize();

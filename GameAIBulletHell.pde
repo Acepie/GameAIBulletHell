@@ -24,7 +24,11 @@ void draw() {
   // Update enemy states
   ArrayList<Enemy> dead = new ArrayList<Enemy>();
   for (Enemy enemy : enemies) {
-    enemy.update(player.position, dungeon.obstacles, enemies);
+    ArrayList<Integer> whiskerResults = new ArrayList<Integer>();
+    for (PVector wp : enemy.getWhiskeyPoints()) {
+      whiskerResults.add(dungeon.getReflectingDirection(enemy.position, wp));
+    }
+    enemy.update(player.position, dungeon.obstacles, enemies, whiskerResults);
     follow_player(enemy);
     if (player.position.dist(enemy.position) < Player.SIZE + Enemy.SIZE) {
       player.loseHealth(enemy.getDamage());
