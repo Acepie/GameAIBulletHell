@@ -4,12 +4,16 @@ public class Room {
   public static final int RIGHT = 1;
   public static final int TOP = 2;
   public static final int BOT = 3;
+  public static final int TOPLEFT = 4;
+  public static final int TOPRIGHT = 5;
+  public static final int BOTLEFT = 6;
+  public static final int BOTRIGHT = 7;
   
   boolean[] doors;
 
   public Room () {
-    doors = new boolean[4];
-    for (int i = 0; i < 4; ++i) {
+    doors = new boolean[8];
+    for (int i = 0; i < 8; ++i) {
       doors[i] = false;
     }
   }

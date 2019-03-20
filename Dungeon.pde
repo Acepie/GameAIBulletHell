@@ -30,6 +30,7 @@ public class Dungeon {
     generateObstacles();
     generatePits();
     breakWalls();
+    computeCornerAdjacencies();
   }
 
   // Draws the dungeon
@@ -124,7 +125,7 @@ public class Dungeon {
       }
 
       Room r = rooms[t.x][t.y];
-      for (int i = 0; i < 4; ++i) {
+      for (int i = 0; i < 8; ++i) {
         if (r != null && r.doors[i]) { // TODO double check this r != null thing
           Tile next = nextRoom(t.x, t.y, i);
           worklist.add(new TileNode(next, cur.cost + next.distance(end), t));
@@ -206,6 +207,36 @@ public class Dungeon {
       }
     }
   }
+
+  // Computes corner adjacencies for each tile based on sides
+  void computeCornerAdjacencies() {
+    for (int x = 0; x < DUNGEONSIZE - 1; ++x) {
+      for (int y = 0; y < DUNGEONSIZE - 1; ++y) {
+        Room r = rooms[x][y];
+        if (r == null) {
+          continue;
+        }
+
+        if (r.doors[Room.RIGHT] && r.doors[Room.BOT] && 
+        rooms[x + 1][y].doors[Room.BOT] && rooms[x][y + 1].doors[Room.RIGHT]) {
+          r.doors[Room.BOTRIGHT] = true;
+        }
+
+        if (r.doors[Room.LEFT] && r.doors[Room.BOT] && 
+        rooms[x - 1][y].doors[Room.BOT] && rooms[x][y + 1].doors[Room.LEFT]) {
+          r.doors[Room.BOTLEFT] = true;
+        }
+
+        if (x > 0 && y > 0 && rooms[x - 1][y - 1] != null && rooms[x - 1][y - 1].doors[Room.BOTRIGHT]) {
+          r.doors[Room.TOPLEFT] = true;
+        }
+
+        if (y > 0 && rooms[x + 1][y - 1] != null && rooms[x + 1][y - 1].doors[Room.BOTLEFT]) {
+          r.doors[Room.TOPRIGHT] = true;
+        }
+      }
+    }
+  }
   
   // Creates obstacles in random rooms in the dungeon
   void generateObstacles() {
@@ -254,13 +285,13 @@ public class Dungeon {
   // ASSUME: the two tiles are adjacent and not identical
   int determineDirection(Tile from, Tile to) {
     if (from.x == to.x && from.y < to.y) return Room.BOT;   // ↓
-    if (from.x < to.x && from.y < to.y) return Room.BOT;    // ↘
+    if (from.x < to.x && from.y < to.y) return Room.BOTRIGHT;    // ↘
     if (from.x == to.x && from.y > to.y) return Room.TOP;   // ↑
-    if (from.x > to.x && from.y > to.y) return Room.TOP;    // ↖   
+    if (from.x > to.x && from.y > to.y) return Room.TOPLEFT;    // ↖   
     if (from.x < to.x && from.y == to.y) return Room.RIGHT; // →
-    if (from.x < to.x && from.y > to.y) return Room.RIGHT;  // ↗
+    if (from.x < to.x && from.y > to.y) return Room.TOPRIGHT;  // ↗
     if (from.x > to.x && from.y == to.y) return Room.LEFT;  // ←
-    if (from.x > to.x && from.y < to.y) return Room.LEFT;   // ↙
+    if (from.x > to.x && from.y < to.y) return Room.BOTLEFT;   // ↙
     return -1;
   }
 
@@ -273,8 +304,16 @@ public class Dungeon {
         return Room.LEFT;
       case Room.BOT:
         return Room.TOP;
-      default:
+      case Room.TOP:
         return Room.BOT;
+      case Room.TOPLEFT:
+        return Room.BOTRIGHT;
+      case Room.TOPRIGHT:
+        return Room.BOTLEFT;
+      case Room.BOTLEFT:
+        return Room.TOPRIGHT;
+      default:
+        return Room.TOPLEFT;
     }
   }
 
@@ -292,6 +331,22 @@ public class Dungeon {
         res.y = y - 1;
         break;
       case Room.BOT:
+        res.y = y + 1;
+        break;
+      case Room.TOPLEFT:
+        res.x = x - 1;
+        res.y = y - 1;
+        break;
+      case Room.TOPRIGHT:
+        res.x = x + 1;
+        res.y = y - 1;
+        break;
+      case Room.BOTLEFT:
+        res.x = x - 1;
+        res.y = y + 1;
+        break;
+      case Room.BOTRIGHT:
+        res.x = x + 1;
         res.y = y + 1;
         break;
     }
