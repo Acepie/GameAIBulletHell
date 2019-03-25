@@ -13,6 +13,8 @@ public class Enemy {
   final float AVOID_FORCE = 200;
   final int CLUSTER_RADIUS = 20;
   final float CLUSTER_FORCE = 100;
+  final int PIT_AVOID_RADIUS = 90;
+  final float PIT_AVOID_FORCE = 230;
   final float WALL_AVOID_FORCE = MAX_ACCELERATION;
   final float MAX_HEALTH = 80;
   public PVector position;
@@ -59,23 +61,25 @@ public class Enemy {
       fill(#DDDDDD);
     }
     stroke(#000000);
-    ellipse(position.x, position.y, SIZE, SIZE);
+    circle(position.x, position.y, SIZE);
     line(position.x, position.y, position.x + cos(rotation) * SIZE / 2, position.y + sin(rotation) * SIZE / 2);
   }
 
   // Determines next move and returns new position
-  public PVector update(PVector player_position, ArrayList<Obstacle> obstacles, ArrayList<Enemy> enemies, ArrayList<Integer> whiskerResult) {
+  public PVector update(PVector player_position, ArrayList<Obstacle> obstacles, 
+    ArrayList<Pit> pits, ArrayList<Enemy> enemies, ArrayList<Integer> whiskerResult) {
+      
     if (!path.isEmpty()) {
       PVector next = path.get(0);
       if (position.dist(next) < TARGET_RADIUS || (path.size() > 1 && position.dist(next) < SLOW_RADIUS)) {
         path.remove(0);
       } else {
-        PVector pos = move(next, obstacles, enemies, whiskerResult);
+        PVector pos = move(next, obstacles, pits, enemies, whiskerResult);
         steer(next);
         return pos;
       }
     } else {
-      PVector pos = move(player_position, obstacles, enemies, whiskerResult);
+      PVector pos = move(player_position, obstacles, pits, enemies, whiskerResult);
       steer(player_position);
       return pos;
     }
@@ -111,7 +115,9 @@ public class Enemy {
   }
 
   // Update position and velocity based on distance from target
-  PVector move(PVector target, ArrayList<Obstacle> obstacles, ArrayList<Enemy> enemies, ArrayList<Integer> whiskerResults) {
+  PVector move(PVector target, ArrayList<Obstacle> obstacles, 
+    ArrayList<Pit> pits, ArrayList<Enemy> enemies, ArrayList<Integer> whiskerResults) {
+      
     PVector dir = PVector.sub(target, position);
     float dist = dir.mag();
 
@@ -131,6 +137,11 @@ public class Enemy {
     // avoid obstacles
     for (Obstacle o : obstacles) { 
       avoidThingAtPosition(o.position, acceleration, AVOID_FORCE, AVOID_RADIUS);
+    }
+    
+    // avoid pits
+    for (Pit p : pits) {
+      avoidThingAtPosition(p.position, acceleration, PIT_AVOID_FORCE, PIT_AVOID_RADIUS);
     }
     
     // avoid other enemies

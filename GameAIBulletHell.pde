@@ -28,7 +28,7 @@ void draw() {
     for (PVector wp : enemy.getWhiskerPoints()) {
       whiskerResults.add(dungeon.getReflectingDirection(enemy.position, wp));
     }
-    PVector pos = enemy.update(player.position, dungeon.obstacles, enemies, whiskerResults);
+    PVector pos = enemy.update(player.position, dungeon.obstacles, dungeon.pits, enemies, whiskerResults);
     if (pos != null && dungeon.canMove(enemy.position, pos)) {
       enemy.position = pos;
     }
