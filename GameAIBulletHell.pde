@@ -25,39 +25,39 @@ void draw() {
   ArrayList<Enemy> dead = new ArrayList<Enemy>();
   for (Enemy enemy : enemies) {
     ArrayList<Integer> whiskerResults = new ArrayList<Integer>();
-    for (PVector wp : enemy.getWhiskeyPoints()) {
+    for (PVector wp : enemy.getWhiskerPoints()) {
       whiskerResults.add(dungeon.getReflectingDirection(enemy.position, wp));
     }
     PVector pos = enemy.update(player.position, dungeon.obstacles, enemies, whiskerResults);
     if (pos != null && dungeon.canMove(enemy.position, pos)) {
       enemy.position = pos;
     }
-    follow_player(enemy);
-    if (player.position.dist(enemy.position) < Player.SIZE + Enemy.SIZE) {
+    followPlayer(enemy);
+    if (player.collidesWith(enemy.position, Enemy.SIZE)) {
       player.loseHealth(enemy.getDamage());
     }
     
-    take_damage_from_obstacles(enemy.position, enemy.health);
+    takeDamageFromObstacles(enemy.position, Enemy.SIZE, enemy.health);
     if (enemy.isDead()) dead.add(enemy);
   }
   enemies.removeAll(dead);
 
   // Update player
-  move_player();
-  take_damage_from_obstacles(player.position, player.health);
+  movePlayer();
+  takeDamageFromObstacles(player.position, Player.SIZE, player.health);
   applyGravity(player.position, player.velocity);
 
   // Drawing
   background(#000000);
   dungeon.draw();
-  player.draw();
   for (Enemy enemy : enemies) {
     enemy.draw();
   }
+  player.draw();
 }
 
 // Attempts to apply player movement
-void move_player() {
+void movePlayer() {
   if (dungeon.canMove(player.position, player.getNextPosition())) {
     player.move();
   }
@@ -74,16 +74,16 @@ void applyGravity(PVector position, PVector velocity) {
 }
 
 // Apply damage to target healthpool when too close to obstacles
-void take_damage_from_obstacles(PVector position, Health health) {
+void takeDamageFromObstacles(PVector position, float size, Health health) {
   for (Obstacle o : dungeon.obstacles) {
-    if (o.collision(position, Enemy.SIZE / 2)) {
+    if (o.collidesWith(position, size)) {
       health.loseHealth(o.getDamage());
     }
   }
 }
 
 // Generates the path the enemy should follow if necessary
-void follow_player(Enemy enemy) {
+void followPlayer(Enemy enemy) {
   Tile t = dungeon.getNearestTile(player.position.x, player.position.y);
   Tile start = dungeon.getNearestTile(enemy.position.x, enemy.position.y);
 
@@ -95,7 +95,6 @@ void follow_player(Enemy enemy) {
 }
 
 void keyPressed() {
-  // TODO: delete random room generator for final game
   if (key == 'r') {
     init();
   } else if (key == ' ') {

@@ -84,7 +84,7 @@ public class Enemy {
   }
 
   // Gets projected whisker points at 45 degree angles from current velocity
-  public ArrayList<PVector> getWhiskeyPoints() {
+  public ArrayList<PVector> getWhiskerPoints() {
     ArrayList<PVector> points = new ArrayList<PVector>();
     PVector dir = velocity.copy();
     dir.normalize();

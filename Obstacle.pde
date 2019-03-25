@@ -8,7 +8,7 @@ public class Obstacle {
     position = new PVector(x, y);
   }
   
-  public boolean collision(PVector other, float radius) {
+  public boolean collidesWith(PVector other, float radius) {
     return dist(position.x, position.y, other.x, other.y) < radius + SIZE / 2;
   }
   

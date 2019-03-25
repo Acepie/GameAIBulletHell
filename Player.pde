@@ -22,6 +22,11 @@ public class Player {
     return this.health.isInvulnerable();
   }
   
+  // can only collide while on the ground
+  boolean collidesWith(PVector position, int size) {
+    return player.position.dist(position) < Player.SIZE + size && player.position.z == 0;
+  }
+  
   public boolean isDead() {
     return this.health.isDead();
   }
@@ -85,7 +90,7 @@ public class Player {
     }
     
     stroke(#000000);
-    float sizeToDraw = max(pow(SIZE, 1.0 / (1.0 + position.z / 4)), SIZE / 2.0);
+    float sizeToDraw = max(pow(SIZE, 1.0 + position.z / 4), SIZE / 2.0);
     ellipse(position.x, position.y, sizeToDraw, sizeToDraw);
   }
 }
