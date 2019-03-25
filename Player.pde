@@ -22,9 +22,9 @@ public class Player {
     return this.health.isInvulnerable();
   }
   
-  // can only collide while on the ground
   boolean collidesWith(PVector position, int size) {
-    return player.position.dist(position) < Player.SIZE + size && player.position.z == 0;
+    // can only collide while on the ground
+    return player.position.z == 0 && player.position.dist(position) < Player.SIZE / 2 + size / 2;
   }
   
   public boolean isDead() {

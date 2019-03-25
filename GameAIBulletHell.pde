@@ -1,6 +1,7 @@
 Dungeon dungeon;
 ArrayList<Enemy> enemies;
 Player player; 
+UI ui;
 final int ENEMIESTOSPAWN = 3;
 final float GRAVITYSTRENGTH = .02;
 
@@ -13,6 +14,7 @@ void init() {
     enemies.add(new Enemy(spawnloc));
   }
   player = new Player(Dungeon.TOTALSIZE / 2, Dungeon.TOTALSIZE / 2);
+  ui = new UI(player.health);
 }
 
 void settings() {
@@ -54,6 +56,7 @@ void draw() {
     enemy.draw();
   }
   player.draw();
+  ui.draw();
 }
 
 // Attempts to apply player movement

@@ -20,9 +20,10 @@ A top down bullet-hell style game with a maze-like room and enemies that pursue 
 
 ## Topics & Features
 
-* Levels are randomly generated
+* Levels are procedurally generated
 * Enemies use A* to pathfind their way toward the player
 * Enemies avoid walls, pits, obstacles, and each other 
 * In a future milestone, enemies will be able to jump over pits
 * The player can jump over pits and enemies, but not over obstacles
 * Pits instantly kill the player, and re-start the game in a new room
+* After getting hit, the player is briefly invulnerable to avoid continuous damage from collisions with obstacles or enemies
