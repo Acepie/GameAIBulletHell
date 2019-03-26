@@ -22,7 +22,7 @@ public class Enemy {
   float rotation = 0;
   float rotationalVelocity = 0;
 
-  final int damage = 5; // how much damage this enemy deals
+  final int DAMAGE = 5; // how much damage this enemy deals
 
   ArrayList<PVector> path;
   Health health;
@@ -32,6 +32,10 @@ public class Enemy {
     this.velocity = new PVector(0, 0);
     this.path = new ArrayList<PVector>();
     this.health = new Health(MAX_HEALTH);
+  }
+  
+  public Bullet shoot() {
+    return new Bullet(position.copy(), PVector.fromAngle(rotation), false);
   }
 
   public void loseHealth(float damage) {
@@ -47,7 +51,7 @@ public class Enemy {
   }
 
   public int getDamage() {
-    return this.damage;
+    return DAMAGE;
   }
 
   public void setPath(ArrayList<PVector> path) {

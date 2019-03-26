@@ -18,7 +18,7 @@ public class Player {
   
   public Bullet shoot() {
     PVector bulletVelocity = (velocity.mag() == 0) ? velocity.copy() : bulletDirection.copy();
-    return new Bullet(position.copy(), bulletVelocity);
+    return new Bullet(position.copy(), bulletVelocity, true);
   }
   
   public void loseHealth(float damage) {

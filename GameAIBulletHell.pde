@@ -75,11 +75,15 @@ void updateBullets() {
       continue;
     }
     
-    // check if bullet collides with walls, enemies, obstacles
+    // check if bullet collides with walls, player, enemies, obstacles
     boolean collision = !dungeon.canMove(bullet.position, bullet.getNextPosition());
+    if (!collision && !bullet.belongsToPlayer && bullet.collidesWith(player.position, Player.SIZE)) {
+      player.loseHealth(bullet.getDamage());
+    }
+    
     if (!collision) {
       for (Enemy e : enemies) {
-        if (bullet.collidesWith(e.position, Enemy.SIZE)) {
+        if (bullet.belongsToPlayer && bullet.collidesWith(e.position, Enemy.SIZE)) {
           e.loseHealth(bullet.getDamage());
           collision = true;
           break;
@@ -147,6 +151,10 @@ void keyPressed() {
     init();
   } else if (key == ' ') {
     player.jump();
+  } else if (key == 'x') {
+    for (Enemy e : enemies) {
+      bullets.add(e.shoot());
+    }
   } else if (key == CODED && keyCode == SHIFT) {
     bullets.add(player.shoot());
   } else if (key == CODED) {
