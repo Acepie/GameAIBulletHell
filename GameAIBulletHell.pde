@@ -1,4 +1,5 @@
 Dungeon dungeon;
+ArrayList<Bullet> bullets;
 ArrayList<Enemy> enemies;
 Player player; 
 UI ui;
@@ -8,6 +9,7 @@ final float GRAVITYSTRENGTH = .02;
 // Initialize game state
 void init() {
   dungeon = new Dungeon();
+  bullets = new ArrayList<Bullet>();
   enemies = new ArrayList<Enemy>();
   for (int i = 0; i < ENEMIESTOSPAWN; ++i) {
     PVector spawnloc = dungeon.getRandomTile();
@@ -44,6 +46,9 @@ void draw() {
   }
   enemies.removeAll(dead);
 
+  // Update bullets
+  updateBullets();
+  
   // Update player
   movePlayer();
   takeDamageFromObstacles(player.position, Player.SIZE, player.health);
@@ -55,8 +60,48 @@ void draw() {
   for (Enemy enemy : enemies) {
     enemy.draw();
   }
+  for (Bullet bullet : bullets) {
+    bullet.draw();
+  }
   player.draw();
   ui.draw();
+}
+
+void updateBullets() {
+  ArrayList<Bullet> expired = new ArrayList<Bullet>();
+  for (Bullet bullet : bullets) {
+    if (bullet.isExpired()) {
+      expired.add(bullet);
+      continue;
+    }
+    
+    // check if bullet collides with walls, enemies, obstacles
+    boolean collision = !dungeon.canMove(bullet.position, bullet.getNextPosition());
+    if (!collision) {
+      for (Enemy e : enemies) {
+        if (bullet.collidesWith(e.position, Enemy.SIZE)) {
+          e.loseHealth(bullet.getDamage());
+          collision = true;
+          break;
+        }
+      }
+    }
+    if (!collision) {
+      for (Obstacle o : dungeon.obstacles) {
+        if (bullet.collidesWith(o.position, Obstacle.SIZE)) {
+          collision = true;
+          break;
+        }
+      }
+    }
+    
+    if (!collision) {
+      bullet.update();
+    } else {
+      expired.add(bullet);
+    }
+  }
+  bullets.removeAll(expired);
 }
 
 // Attempts to apply player movement
@@ -102,6 +147,8 @@ void keyPressed() {
     init();
   } else if (key == ' ') {
     player.jump();
+  } else if (key == CODED && keyCode == SHIFT) {
+    bullets.add(player.shoot());
   } else if (key == CODED) {
     player.arrowDown(keyCode);
   }

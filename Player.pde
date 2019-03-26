@@ -5,13 +5,20 @@ public class Player {
   final float JUMP_POW = .2;
   
   PVector position;
+  PVector bulletDirection;
   PVector velocity;
   Health health;
   
   public Player(int x, int y) {
     this.position = new PVector(x, y);
+    this.bulletDirection = new PVector(1, 0);
     this.velocity = new PVector(0, 0);
     this.health = new Health(MAX_HEALTH);
+  }
+  
+  public Bullet shoot() {
+    PVector bulletVelocity = (velocity.mag() == 0) ? velocity.copy() : bulletDirection.copy();
+    return new Bullet(position.copy(), bulletVelocity);
   }
   
   public void loseHealth(float damage) {
@@ -49,7 +56,7 @@ public class Player {
   }
 
   // Updates player velocity based on keys pressed
-  public void arrowDown(int key_code) {
+  public void arrowDown(int key_code) {    
     switch(key_code) {
       case UP:
         velocity.y = -MAX_SPEED;
@@ -64,6 +71,7 @@ public class Player {
         velocity.x = MAX_SPEED;
         break;
     }
+    updateBulletDirection();
   }
 
   // Updates player velocity based on keys released
@@ -92,5 +100,11 @@ public class Player {
     stroke(#000000);
     float sizeToDraw = max(pow(SIZE, 1.0 + position.z / 4), SIZE / 2.0);
     ellipse(position.x, position.y, sizeToDraw, sizeToDraw);
+  }
+  
+  void updateBulletDirection() {
+    if (velocity.mag() != 0) {
+      bulletDirection = velocity.copy();
+    }
   }
 }
