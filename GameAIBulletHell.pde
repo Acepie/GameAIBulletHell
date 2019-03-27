@@ -4,7 +4,7 @@ ArrayList<Enemy> enemies;
 Player player; 
 UI ui;
 final int ENEMIESTOSPAWN = 3;
-final float GRAVITYSTRENGTH = .02;
+final static float GRAVITYSTRENGTH = .02;
 
 // Initialize game state
 void init() {
@@ -33,8 +33,14 @@ void draw() {
       whiskerResults.add(dungeon.getReflectingDirection(enemy.position, wp));
     }
     PVector pos = enemy.update(player.position, dungeon.obstacles, dungeon.pits, enemies, whiskerResults);
-    if (pos != null && dungeon.canMove(enemy.position, pos)) {
+    if (dungeon.canMove(enemy.position, pos)) {
       enemy.position = pos;
+    } else { // Apply downward velocity but don't pass wall
+      enemy.position.z += enemy.velocity.z;
+    }
+    if (applyGravity(enemy.position, enemy.velocity)) {
+      dead.add(enemy);
+      continue;
     }
     followPlayer(enemy);
     if (player.collidesWith(enemy.position, Enemy.SIZE)) {
@@ -52,7 +58,9 @@ void draw() {
   // Update player
   movePlayer();
   takeDamageFromObstacles(player.position, Player.SIZE, player.health);
-  applyGravity(player.position, player.velocity);
+  if (applyGravity(player.position, player.velocity)) {
+    init();
+  }
 
   // Drawing
   background(#000000);
@@ -112,17 +120,21 @@ void updateBullets() {
 void movePlayer() {
   if (dungeon.canMove(player.position, player.getNextPosition())) {
     player.move();
+  } else { // Apply downward velocity but don't pass wall
+    player.position.z += player.velocity.z;
   }
 }
 
-// Applies gravity to velocity and resets z position to floor if appropriate
-void applyGravity(PVector position, PVector velocity) {
+// Applies gravity to velocity and resets z position to floor if appropriate. Returns if object fell into pit
+boolean applyGravity(PVector position, PVector velocity) {
   velocity.z -= GRAVITYSTRENGTH;
   if (position.z <= 0 && !dungeon.overPit(position)) {
     position.z = 0;
   } else if (position.z <= 0) {
-    init();
+    return true;
   }
+
+  return false;
 }
 
 // Apply damage to target healthpool when too close to obstacles
