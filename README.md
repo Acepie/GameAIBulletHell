@@ -8,13 +8,13 @@ A top down bullet-hell style game with a maze-like room and enemies that pursue 
 
 ## How To Play
 
-**Game Set-Up**
+### Game Set-Up
 
 1. Clone repository
 2. Open in Processing 3.5 or later
 3. Press the Play ("▶") button
 
-**Controls**
+### Controls
 
 - Use the arrow keys or WASD to move
 - Press "space" to jump
