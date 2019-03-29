@@ -27,12 +27,16 @@ public class Enemy {
 
   ArrayList<PVector> path;
   Health health;
+  Task btree;
+  Blackboard bb;
 
-  public Enemy (PVector position) {
+  public Enemy (PVector position, Task t, Blackboard bb) {
     this.position = position;
     this.velocity = new PVector(0, 0);
     this.path = new ArrayList<PVector>();
     this.health = new Health(MAX_HEALTH);
+    this.btree = t;
+    this.bb = bb;
   }
   
   public Bullet shoot() {
@@ -72,32 +76,8 @@ public class Enemy {
   }
 
   // Determines next move and returns new position
-  public PVector update(PVector player_position, ArrayList<Obstacle> obstacles, 
-    ArrayList<Pit> pits, ArrayList<Enemy> enemies, ArrayList<Integer> whiskerResult) {
-      
-    if (position.z > 0) {
-      // In air can't navigate
-      return PVector.add(position, velocity);
-    }
-
-    if (!path.isEmpty()) {
-      PVector next = path.get(0);
-      if (position.dist(next) < TARGET_RADIUS || (path.size() > 1 && position.dist(next) < SLOW_RADIUS)) {
-        path.remove(0);
-      } else {
-        PVector pos = move(next, obstacles, pits, enemies, whiskerResult);
-        steer(next);
-        return pos;
-      }
-    } else {
-      PVector target = player_position.copy();
-      target.z = 0;
-      PVector pos = move(target, obstacles, pits, enemies, whiskerResult);
-      steer(target);
-      return pos;
-    }
-
-    return position;
+  public void update() {
+    btree.execute();
   }
 
   // Gets projected whisker points at 45 degree angles from current velocity

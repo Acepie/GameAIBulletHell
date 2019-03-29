@@ -10,12 +10,32 @@ final static float GRAVITYSTRENGTH = .02;
 void init() {
   dungeon = new Dungeon();
   bullets = new ArrayList<Bullet>();
+  player = new Player(Dungeon.TOTALSIZE / 2, Dungeon.TOTALSIZE / 2);
   enemies = new ArrayList<Enemy>();
   for (int i = 0; i < ENEMIESTOSPAWN; ++i) {
+    Blackboard b = new Blackboard();
+    Task t = new TaskSequence(b, new Task[]{
+      new TaskUpdatePath(b, dungeon),
+      new TaskSelector(b, new Task[]{
+        new TaskSequence(b, new Task[]{
+          new TaskInAir(b),
+          new TaskAirMovement(b, dungeon)
+        }),
+        new TaskSequence(b, new Task[]{
+          new TaskHasPath(b),
+          new TaskFollowPath(b, dungeon)
+        }),
+        new TaskFollowPlayer(b, dungeon)
+      })
+    });
     PVector spawnloc = dungeon.getRandomTile();
-    enemies.add(new Enemy(spawnloc));
+    enemies.add(new Enemy(spawnloc, t, b));
   }
-  player = new Player(Dungeon.TOTALSIZE / 2, Dungeon.TOTALSIZE / 2);
+  for (Enemy e : enemies) {
+    e.bb.put("enemies", enemies);
+    e.bb.put("enemy", e);
+    e.bb.put("player", player);
+  }
   ui = new UI(player.health);
 }
 
@@ -28,25 +48,14 @@ void draw() {
   // Update enemy states
   ArrayList<Enemy> dead = new ArrayList<Enemy>();
   for (Enemy enemy : enemies) {
-    ArrayList<Integer> whiskerResults = new ArrayList<Integer>();
-    for (PVector wp : enemy.getWhiskerPoints()) {
-      whiskerResults.add(dungeon.getReflectingDirection(enemy.position, wp));
-    }
-    PVector pos = enemy.update(player.position, dungeon.obstacles, dungeon.pits, enemies, whiskerResults);
-    if (dungeon.canMove(enemy.position, pos)) {
-      enemy.position = pos;
-    } else { // Apply downward velocity but don't pass wall
-      enemy.position.z += enemy.velocity.z;
-    }
+    enemy.update();
     if (applyGravity(enemy.position, enemy.velocity)) {
       dead.add(enemy);
       continue;
     }
-    followPlayer(enemy);
     if (player.collidesWith(enemy.position, Enemy.SIZE)) {
       player.loseHealth(enemy.getDamage());
     }
-    
     takeDamageFromObstacles(enemy.position, Enemy.SIZE, enemy.health);
     if (enemy.isDead()) dead.add(enemy);
   }
