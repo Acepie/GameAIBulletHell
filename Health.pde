@@ -1,5 +1,5 @@
 public class Health {
-  final int INVULNERABILITY = 1000;
+  final int INVULNERABILITY = 100;
   
   private float health;
   private int last_hit;

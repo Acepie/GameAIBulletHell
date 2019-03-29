@@ -1,7 +1,7 @@
 class Bullet {
   static final int TTL = 20;
   static final int SIZE = 6;
-  static final float SPEED = 20;
+  static final float SPEED = 5;
   static final int PLAYER_DAMAGE = 10;
   static final int ENEMY_DAMAGE = 5;
   

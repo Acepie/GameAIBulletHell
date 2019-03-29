@@ -17,7 +17,7 @@ public class Player {
   }
   
   public Bullet shoot() {
-    PVector bulletVelocity = (velocity.mag() == 0) ? velocity.copy() : bulletDirection.copy();
+    PVector bulletVelocity = bulletDirection;
     return new Bullet(position.copy(), bulletVelocity, true);
   }
   
@@ -119,6 +119,7 @@ public class Player {
         velocity.x = 0;
         break;
     }
+    updateBulletDirection();
   }
   
   public void draw() {

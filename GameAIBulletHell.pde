@@ -57,7 +57,9 @@ void draw() {
       player.loseHealth(enemy.getDamage());
     }
     takeDamageFromObstacles(enemy.position, Enemy.SIZE, enemy.health);
-    if (enemy.isDead()) dead.add(enemy);
+    if (enemy.isDead()) {
+      dead.add(enemy);
+    }
   }
   enemies.removeAll(dead);
 
