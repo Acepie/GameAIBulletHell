@@ -171,11 +171,15 @@ void keyPressed() {
     bullets.add(player.shoot());
   } else if (key == CODED) {
     player.arrowDown(keyCode);
+  } else if (key == 'w' || key == 'a' || key == 's' || key == 'd' ) {
+    player.arrowDown(key);
   }
 }
 
 void keyReleased() {
   if (key == CODED) {
     player.arrowUp(keyCode);
+  } else if (key == 'w' || key == 'a' || key == 's' || key == 'd' ) {
+    player.arrowUp(key);
   }
 }

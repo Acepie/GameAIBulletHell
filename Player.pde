@@ -87,6 +87,39 @@ public class Player {
         break;
     }
   }
+
+  // Updates player velocity based on keys pressed
+  public void arrowDown(char key) {    
+    switch(key) {
+      case 'w':
+        velocity.y = -MAX_SPEED;
+        break;
+      case 's':
+        velocity.y = MAX_SPEED;
+        break;
+      case 'a':
+        velocity.x = -MAX_SPEED;
+        break;
+      case 'd':
+        velocity.x = MAX_SPEED;
+        break;
+    }
+    updateBulletDirection();
+  }
+
+  // Updates player velocity based on keys released
+  public void arrowUp(char key) {
+    switch(key) {
+      case 'w':
+      case 's':
+        velocity.y = 0;
+        break;
+      case 'a':
+      case 'd':
+        velocity.x = 0;
+        break;
+    }
+  }
   
   public void draw() {
     if (isDead()) {
