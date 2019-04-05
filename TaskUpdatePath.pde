@@ -17,6 +17,7 @@ public class TaskUpdatePath extends Task {
       path.remove(path.size() - 1); // last tile is not needed since player is there
     }
     enemy.setPath(path);
+    blackboard.put("lastPathUpdate", millis());
     return true;
   }
 }

@@ -13,6 +13,10 @@ public class TaskFollowPath extends Task {
     }
 
     PVector next = enemy.path.get(0);
+    if (next.dist(enemy.position) < Dungeon.TILESIZE / 10) {
+      enemy.path.remove(0);
+      return true;
+    }
 
     ArrayList<Integer> whiskerResults = new ArrayList<Integer>();
     for (PVector wp : enemy.getWhiskerPoints()) {

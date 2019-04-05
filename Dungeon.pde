@@ -16,7 +16,7 @@ public class Dungeon {
   final int PITCOUNT = 5;
   final int PITSIZE = 30;
   final int MINPITDISTANCE = 80;
-  Random rng = new Random(); 
+  Random rng = new Random();
 
   Room[][] rooms;
   ArrayList<Obstacle> obstacles;

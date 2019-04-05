@@ -15,8 +15,30 @@ void init() {
   for (int i = 0; i < ENEMIESTOSPAWN; ++i) {
     Blackboard b = new Blackboard();
     Task t = new TaskSequence(b, new Task[]{
-      new TaskUpdatePath(b, dungeon),
-      new TaskSelector(b, new Task[]{
+
+      // Support allies attacking player (disabled because too strong)
+      // new TaskSupportAllies(b),
+      // Check for player
+      new TaskTrue(b, new TaskSequence(b, new Task[]{
+        new TaskInRangeOfPlayer(b, dungeon),
+        new TaskSpotPlayer(b)
+      })),
+      // Get current path
+      new TaskTrue(b, new TaskSelector(b, new Task[]{
+        new TaskSequence(b, new Task[] {
+          new TaskSpottedPlayer(b),
+          new TaskUpdatePath(b, dungeon)
+        }),
+        new TaskSequence(b, new Task[] {
+          new TaskSelector(b, new Task[]{
+            new TaskNot(b, new TaskHasPath(b)),
+            new TaskPathStale(b)
+          }),
+          new TaskRandomPath(b, dungeon)
+        })
+      })),
+      // Move
+      new TaskTrue(b, new TaskSelector(b, new Task[]{
         new TaskSequence(b, new Task[]{
           new TaskInAir(b),
           new TaskAirMovement(b, dungeon)
@@ -25,8 +47,12 @@ void init() {
           new TaskHasPath(b),
           new TaskFollowPath(b, dungeon)
         }),
-        new TaskFollowPlayer(b, dungeon)
-      }),
+        new TaskSequence(b, new Task[]{
+          new TaskSpottedPlayer(b),
+          new TaskFollowPlayer(b, dungeon)
+        })
+      })),
+      // Fire bullets
       new TaskSequence(b, new Task[]{
         new TaskInRangeOfPlayer(b, dungeon),
         new TaskIsFacingPlayer(b),
@@ -34,6 +60,10 @@ void init() {
       })
     });
     PVector spawnloc = dungeon.getRandomTile();
+    // Don't spawn too close to player
+    while (spawnloc.dist(player.position) < Dungeon.TILESIZE) {
+      spawnloc = dungeon.getRandomTile();
+    }
     enemies.add(new Enemy(spawnloc, t, b));
   }
   for (Enemy e : enemies) {
@@ -41,6 +71,8 @@ void init() {
     e.bb.put("enemy", e);
     e.bb.put("player", player);
     e.bb.put("bullets", bullets);
+    e.bb.put("spottedPlayer", false);
+    e.bb.put("lastPathUpdate", millis());
   }
   ui = new UI(player.health);
 }
@@ -161,18 +193,6 @@ void takeDamageFromObstacles(PVector position, float size, Health health) {
       health.loseHealth(o.getDamage());
     }
   }
-}
-
-// Generates the path the enemy should follow if necessary
-void followPlayer(Enemy enemy) {
-  Tile t = dungeon.getNearestTile(player.position.x, player.position.y);
-  Tile start = dungeon.getNearestTile(enemy.position.x, enemy.position.y);
-
-  ArrayList<PVector> path = dungeon.pathTo(start, t);
-  if (!path.isEmpty()) {
-    path.remove(path.size() - 1); // last tile is not needed since player is there
-  }
-  enemy.setPath(path);
 }
 
 void keyPressed() {
