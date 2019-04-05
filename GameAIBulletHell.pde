@@ -26,6 +26,11 @@ void init() {
           new TaskFollowPath(b, dungeon)
         }),
         new TaskFollowPlayer(b, dungeon)
+      }),
+      new TaskSequence(b, new Task[]{
+        new TaskInRangeOfPlayer(b, dungeon),
+        new TaskIsFacingPlayer(b),
+        new TaskFireBullet(b)
       })
     });
     PVector spawnloc = dungeon.getRandomTile();
@@ -35,6 +40,7 @@ void init() {
     e.bb.put("enemies", enemies);
     e.bb.put("enemy", e);
     e.bb.put("player", player);
+    e.bb.put("bullets", bullets);
   }
   ui = new UI(player.health);
 }
@@ -174,10 +180,6 @@ void keyPressed() {
     init();
   } else if (key == ' ') {
     player.jump();
-  } else if (key == 'x') {
-    for (Enemy e : enemies) {
-      bullets.add(e.shoot());
-    }
   } else if (key == CODED && keyCode == SHIFT) {
     bullets.add(player.shoot());
   } else if (key == CODED) {

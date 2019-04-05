@@ -22,6 +22,7 @@ public class Enemy {
   PVector velocity;
   float rotation = 0;
   float rotationalVelocity = 0;
+  float lastFire = 0;
 
   final int DAMAGE = 5; // how much damage this enemy deals
 
@@ -40,6 +41,7 @@ public class Enemy {
   }
   
   public Bullet shoot() {
+    lastFire = millis();
     return new Bullet(position.copy(), PVector.fromAngle(rotation), false);
   }
 
