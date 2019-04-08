@@ -24,11 +24,20 @@ public class Room {
     int left = x * size;
     int right = (x + 1) * size;
     
-    fill(#FFFFFF);
-    stroke(#FFFFFF);
+    fill(#e5d3be);
+    stroke(#e5d3be);
     rect(left, top, size, size);
     
-    stroke(#FF0000);
+    strokeWeight(4);
+    stroke(60);
+    line(right + 2, top, right + 2, bot);
+    line(left + 3, bot + 2, right + 2, bot + 2);
+    strokeWeight(3);
+    stroke(100);
+    line(right + 1, top, right + 1, bot);
+    line(left + 2, bot + 1, right + 1, bot + 1);
+    
+    stroke(#8c520f);
     strokeWeight(2);
     if (!this.doors[Room.LEFT]) {
       line(left, top, left, bot);

@@ -20,5 +20,11 @@ public class Obstacle {
     fill(#f4424b);
     stroke(#f4424b);
     circle(position.x, position.y, SIZE);
+    int d = 4;
+    int p = 5;
+    line(position.x - d, position.y - d, position.x + d, position.y + d);
+    line(position.x - d,  position.y + d, position.x + d, position.y - d);
+    line(position.x,  position.y - p, position.x, position.y + 5);
+    line(position.x - p,  position.y, position.x + p, position.y);
   }
 }

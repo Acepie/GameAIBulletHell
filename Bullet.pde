@@ -41,7 +41,7 @@ class Bullet {
   void draw() {
     noStroke();
     if (belongsToPlayer) {
-      fill(#03e500);
+      fill(#3030ff);
     } else {
       fill(#000000);
     }

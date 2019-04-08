@@ -48,14 +48,14 @@ public class Dungeon {
       }
     }
     
-    // Draw the obstacles
-    for (Obstacle o : obstacles) {
-      o.draw();
-    }
-
     // Draw pits
     for (Pit p : pits) {
       p.draw();
+    }
+    
+    // Draw the obstacles
+    for (Obstacle o : obstacles) {
+      o.draw();
     }
   }
 
