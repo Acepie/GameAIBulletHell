@@ -3,20 +3,28 @@ public class Player {
   final int MAX_SPEED = 5;
   final int MAX_HEALTH = 100;
   final float JUMP_POW = .2;
+  final int BULLET_RATE = 100; // # milliseconds between each shot
 
   PVector position;
   PVector bulletDirection;
   PVector velocity;
   Health health;
+  private int last_bullet;
 
   public Player(int x, int y) {
     this.position = new PVector(x, y);
     this.bulletDirection = new PVector(1, 0);
     this.velocity = new PVector(0, 0);
     this.health = new Health(MAX_HEALTH);
+    this.last_bullet = 0;
+  }
+
+  public boolean canShoot() {
+    return last_bullet + BULLET_RATE <= millis();
   }
 
   public Bullet shoot() {
+    this.last_bullet = millis();
     return new Bullet(position.copy(), bulletDirection.copy(), true);
   }
 

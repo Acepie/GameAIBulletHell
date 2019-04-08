@@ -112,7 +112,9 @@ void draw() {
   }
   if (mousePressed) {
     player.updateBulletDirection(mouseX, mouseY);
-    bullets.add(player.shoot());
+    if (player.canShoot()) {
+      bullets.add(player.shoot());
+    }
   }
 
   // Drawing
@@ -204,7 +206,7 @@ void keyPressed() {
     init();
   } else if (key == ' ') {
     player.jump();
-  } else if (key == CODED && keyCode == SHIFT) {
+  } else if (key == CODED && keyCode == SHIFT && player.canShoot()) {
     bullets.add(player.shoot());
   } else if (key == CODED) {
     player.arrowDown(keyCode);
