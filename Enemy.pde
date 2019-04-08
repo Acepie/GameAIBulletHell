@@ -25,6 +25,7 @@ public class Enemy {
   float lastFire = 0;
 
   final int DAMAGE = 5; // how much damage this enemy deals
+  final int VALUE = 100; // how much killing this enemy is worth
 
   ArrayList<PVector> path;
   Health health;
@@ -59,6 +60,10 @@ public class Enemy {
 
   public int getDamage() {
     return DAMAGE;
+  }
+  
+  public int getPoints() {
+    return VALUE;
   }
 
   public void setPath(ArrayList<PVector> path) {

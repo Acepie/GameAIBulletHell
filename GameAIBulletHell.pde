@@ -3,6 +3,7 @@ ArrayList<Bullet> bullets;
 ArrayList<Enemy> enemies;
 Player player; 
 UI ui;
+Score score;
 final int ENEMIESTOSPAWN = 3;
 final static float GRAVITYSTRENGTH = .02;
 
@@ -74,7 +75,8 @@ void init() {
     e.bb.put("spottedPlayer", false);
     e.bb.put("lastPathUpdate", millis());
   }
-  ui = new UI(player.health);
+  score = new Score();
+  ui = new UI(player.health, score);
 }
 
 void settings() {
@@ -96,6 +98,7 @@ void draw() {
     }
     takeDamageFromObstacles(enemy.position, Enemy.SIZE, enemy.health);
     if (enemy.isDead()) {
+      score.add(enemy.getPoints());
       dead.add(enemy);
     }
   }
