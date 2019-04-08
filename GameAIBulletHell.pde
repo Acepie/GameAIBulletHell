@@ -68,7 +68,7 @@ void spawnEnemies() {
         new TaskIsFacingPlayer(b), 
         new TaskFireBullet(b)
       })
-      });
+    });
     PVector spawnloc = dungeon.getRandomTile();
     // Don't spawn too close to player
     while (spawnloc.dist(player.position) < Dungeon.TILESIZE) {
@@ -115,7 +115,7 @@ void nextRoom() {
 }
 
 void drawGameOver() {
-  ui.gameOverScreen(playerInPit ? "You fell to your death." : "Turns out, red things hurt you.");
+  ui.gameOverScreen(playerInPit ? "You fell to your death." : "Turns out, red things hurt.");
 }
 
 void drawGame() {  
