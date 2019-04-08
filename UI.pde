@@ -5,9 +5,27 @@ public class UI {
   private final int HP_X = 22;
   private final int SCORE_X = width - 100;
   
+  final String GAME_OVER = "GAME OVER";
+  final String FINAL_SCORE = "Final Score: ";
+  final String RESTART = "Press 'R' to play again";
+  
   public UI(Health health, Score score) {
     this.health = health;
     this.score = score;
+  }
+  
+  public void gameOverScreen() {
+    fill(15);
+    rect(0, 0, width, height);
+    fill(#e20000);
+    textSize(30);
+    text(GAME_OVER, width / 2 - textWidth(GAME_OVER) / 2, height / 2 - 30);
+    fill(255);
+    String s = FINAL_SCORE + score.get();
+    textSize(22);
+    text(s, width / 2 - textWidth(s) / 2, height / 2);
+    textSize(14);
+    text(RESTART, width / 2 - textWidth(RESTART) / 2, height / 2 + 40);
   }
   
   public void draw() {

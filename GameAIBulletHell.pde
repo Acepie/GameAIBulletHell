@@ -4,6 +4,8 @@ ArrayList<Enemy> enemies;
 Player player; 
 UI ui;
 Score score;
+boolean playerInPit;
+
 final int ENEMIESTOSPAWN = 3;
 final static float GRAVITYSTRENGTH = .02;
 
@@ -12,6 +14,7 @@ void init() {
   dungeon = new Dungeon();
   bullets = new ArrayList<Bullet>();
   player = new Player(Dungeon.TOTALSIZE / 2, Dungeon.TOTALSIZE / 2);
+  playerInPit = false;
   enemies = new ArrayList<Enemy>();
   for (int i = 0; i < ENEMIESTOSPAWN; ++i) {
     Blackboard b = new Blackboard();
@@ -84,7 +87,23 @@ void settings() {
   init();
 }
 
-void draw() {  
+void draw() {
+  if (isGameOver()) {
+    drawGameOver();
+  } else {
+    drawGame();
+  }
+}
+
+boolean isGameOver() {
+  return player.isDead() || playerInPit;
+}  
+
+void drawGameOver() {
+  ui.gameOverScreen();
+}
+
+void drawGame() {  
   // Update enemy states
   ArrayList<Enemy> dead = new ArrayList<Enemy>();
   for (Enemy enemy : enemies) {
@@ -111,7 +130,7 @@ void draw() {
   movePlayer();
   takeDamageFromObstacles(player.position, Player.SIZE, player.health);
   if (applyGravity(player.position, player.velocity)) {
-    init();
+    playerInPit = true;
   }
   if (mousePressed) {
     player.updateBulletDirection(mouseX, mouseY);
@@ -183,7 +202,7 @@ void movePlayer() {
   }
 }
 
-// Applies gravity to velocity and resets z position to floor if appropriate. Returns if object fell into pit
+// Applies gravity to velocity and resets z position to floor if appropriate. Returns true if object fell into pit.
 boolean applyGravity(PVector position, PVector velocity) {
   velocity.z -= GRAVITYSTRENGTH;
   if (position.z <= 0 && !dungeon.overPit(position)) {

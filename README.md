@@ -18,7 +18,7 @@ A top down bullet-hell style game with a maze-like room and enemies that pursue 
 
 - Use the arrow keys or WASD to move
 - Press "space" to jump
-- Press "shift" to fire bullets
+- Press "shift" or hold down the mouse button to fire bullets
 - Press "R" to randomly generate a new room
 
 ## Topics & Features
