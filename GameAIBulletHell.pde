@@ -110,6 +110,10 @@ void draw() {
   if (applyGravity(player.position, player.velocity)) {
     init();
   }
+  if (mousePressed) {
+    player.updateBulletDirection(mouseX, mouseY);
+    bullets.add(player.shoot());
+  }
 
   // Drawing
   background(#000000);
@@ -215,4 +219,8 @@ void keyReleased() {
   } else if (key == 'w' || key == 'a' || key == 's' || key == 'd' ) {
     player.arrowUp(key);
   }
+}
+
+void mouseMoved() {
+  player.updateBulletDirection(mouseX, mouseY);
 }
