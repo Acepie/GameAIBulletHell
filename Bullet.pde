@@ -43,7 +43,7 @@ class Bullet {
     if (belongsToPlayer) {
       fill(#3030ff);
     } else {
-      fill(#000000);
+      fill(#f4424b);
     }
     circle(position.x, position.y, SIZE);
   }

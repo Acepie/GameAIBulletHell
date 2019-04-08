@@ -8,6 +8,8 @@ public class Room {
   public static final int TOPRIGHT = 5;
   public static final int BOTLEFT = 6;
   public static final int BOTRIGHT = 7;
+  public static final color ROOM_COLOR = #d3d3d3;
+  public static final color WALL_COLOR = #636363;
   
   boolean[] doors;
 
@@ -24,8 +26,8 @@ public class Room {
     int left = x * size;
     int right = (x + 1) * size;
     
-    fill(#e5d3be);
-    stroke(#e5d3be);
+    fill(ROOM_COLOR);
+    stroke(ROOM_COLOR);
     rect(left, top, size, size);
     
     strokeWeight(4);
@@ -37,7 +39,7 @@ public class Room {
     line(right + 1, top, right + 1, bot);
     line(left + 2, bot + 1, right + 1, bot + 1);
     
-    stroke(#8c520f);
+    stroke(WALL_COLOR);
     strokeWeight(2);
     if (!this.doors[Room.LEFT]) {
       line(left, top, left, bot);

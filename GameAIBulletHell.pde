@@ -14,7 +14,13 @@ void init() {
   dungeon = new Dungeon();
   bullets = new ArrayList<Bullet>();
   player = new Player(Dungeon.TOTALSIZE / 2, Dungeon.TOTALSIZE / 2);
-  playerInPit = false;
+  playerInPit = false;  
+  spawnEnemies();
+  score = new Score();
+  ui = new UI(player.health, score);
+}
+
+void spawnEnemies() {
   enemies = new ArrayList<Enemy>();
   for (int i = 0; i < ENEMIESTOSPAWN; ++i) {
     Blackboard b = new Blackboard();
@@ -70,6 +76,7 @@ void init() {
     }
     enemies.add(new Enemy(spawnloc, t, b));
   }
+  
   for (Enemy e : enemies) {
     e.bb.put("enemies", enemies);
     e.bb.put("enemy", e);
@@ -78,8 +85,6 @@ void init() {
     e.bb.put("spottedPlayer", false);
     e.bb.put("lastPathUpdate", millis());
   }
-  score = new Score();
-  ui = new UI(player.health, score);
 }
 
 void settings() {
@@ -90,6 +95,11 @@ void settings() {
 void draw() {
   if (isGameOver()) {
     drawGameOver();
+  } else if (enemies.size() == 0) {
+    dungeon = new Dungeon();
+    spawnEnemies();
+    player.position = new PVector(Dungeon.TOTALSIZE / 2, Dungeon.TOTALSIZE / 2);
+    player.health.healToFull();
   } else {
     drawGame();
   }

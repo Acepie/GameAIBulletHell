@@ -74,7 +74,7 @@ public class Enemy {
     if (isDead()) {
       fill(#000000);
     } else {
-      fill(#DDDDDD);
+      fill(#ff7b00);
     }
     stroke(#000000);
     float sizeToDraw = max(pow(SIZE, 1.0 + position.z / 4), SIZE / 2.0);

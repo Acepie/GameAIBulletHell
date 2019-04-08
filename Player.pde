@@ -3,7 +3,7 @@ public class Player {
   final int MAX_SPEED = 5;
   final int MAX_HEALTH = 100;
   final float JUMP_POW = .2;
-  final int BULLET_RATE = 100; // # milliseconds between each shot
+  final int BULLET_RATE = 120; // # milliseconds between each shot
 
   PVector position;
   PVector bulletDirection;
