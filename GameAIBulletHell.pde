@@ -30,45 +30,45 @@ void spawnEnemies() {
       // new TaskSupportAllies(b),
       // Check for player
       new TaskTrue(b, new TaskSequence(b, new Task[]{
-        new TaskInRangeOfPlayer(b, dungeon),
+        new TaskInRangeOfPlayer(b, dungeon), 
         new TaskSpotPlayer(b)
-      })),
+      })), 
       // Get current path
       new TaskTrue(b, new TaskSelector(b, new Task[]{
         new TaskSequence(b, new Task[] {
-          new TaskSpottedPlayer(b),
+          new TaskSpottedPlayer(b), 
           new TaskUpdatePath(b, dungeon)
-        }),
+        }), 
         new TaskSequence(b, new Task[] {
           new TaskSelector(b, new Task[]{
-            new TaskNot(b, new TaskHasPath(b)),
+            new TaskNot(b, new TaskHasPath(b)), 
             new TaskPathStale(b)
-          }),
+          }), 
           new TaskRandomPath(b, dungeon)
         })
-      })),
+      })), 
       // Move
       new TaskTrue(b, new TaskSelector(b, new Task[]{
         new TaskSequence(b, new Task[]{
-          new TaskInAir(b),
+          new TaskInAir(b), 
           new TaskAirMovement(b, dungeon)
-        }),
+        }), 
         new TaskSequence(b, new Task[]{
-          new TaskHasPath(b),
+          new TaskHasPath(b), 
           new TaskFollowPath(b, dungeon)
-        }),
+        }), 
         new TaskSequence(b, new Task[]{
-          new TaskSpottedPlayer(b),
+          new TaskSpottedPlayer(b), 
           new TaskFollowPlayer(b, dungeon)
         })
-      })),
+      })), 
       // Fire bullets
       new TaskSequence(b, new Task[]{
-        new TaskInRangeOfPlayer(b, dungeon),
-        new TaskIsFacingPlayer(b),
+        new TaskInRangeOfPlayer(b, dungeon), 
+        new TaskIsFacingPlayer(b), 
         new TaskFireBullet(b)
       })
-    });
+      });
     PVector spawnloc = dungeon.getRandomTile();
     // Don't spawn too close to player
     while (spawnloc.dist(player.position) < Dungeon.TILESIZE) {
@@ -76,7 +76,7 @@ void spawnEnemies() {
     }
     enemies.add(new Enemy(spawnloc, t, b));
   }
-  
+
   for (Enemy e : enemies) {
     e.bb.put("enemies", enemies);
     e.bb.put("enemy", e);
@@ -96,10 +96,7 @@ void draw() {
   if (isGameOver()) {
     drawGameOver();
   } else if (enemies.size() == 0) {
-    dungeon = new Dungeon();
-    spawnEnemies();
-    player.position = new PVector(Dungeon.TOTALSIZE / 2, Dungeon.TOTALSIZE / 2);
-    player.health.healToFull();
+    nextRoom();
   } else {
     drawGame();
   }
@@ -109,8 +106,16 @@ boolean isGameOver() {
   return player.isDead() || playerInPit;
 }  
 
+void nextRoom() {
+  dungeon = new Dungeon();
+  spawnEnemies();
+  player.position = new PVector(Dungeon.TOTALSIZE / 2, Dungeon.TOTALSIZE / 2);
+  player.health.healToFull();
+  playerInPit = false;
+}
+
 void drawGameOver() {
-  ui.gameOverScreen();
+  ui.gameOverScreen(playerInPit ? "You fell to your death." : "Turns out, red things hurt you.");
 }
 
 void drawGame() {  
@@ -135,7 +140,7 @@ void drawGame() {
 
   // Update bullets
   updateBullets();
-  
+
   // Update player
   movePlayer();
   takeDamageFromObstacles(player.position, Player.SIZE, player.health);
@@ -169,13 +174,13 @@ void updateBullets() {
       expired.add(bullet);
       continue;
     }
-    
+
     // check if bullet collides with walls, player, enemies, obstacles
     boolean collision = !dungeon.canMove(bullet.position, bullet.getNextPosition());
     if (!collision && !bullet.belongsToPlayer && bullet.collidesWith(player.position, Player.SIZE)) {
       player.loseHealth(bullet.getDamage());
     }
-    
+
     if (!collision) {
       for (Enemy e : enemies) {
         if (bullet.belongsToPlayer && bullet.collidesWith(e.position, Enemy.SIZE)) {
@@ -193,7 +198,7 @@ void updateBullets() {
         }
       }
     }
-    
+
     if (!collision) {
       bullet.update();
     } else {

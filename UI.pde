@@ -14,18 +14,20 @@ public class UI {
     this.score = score;
   }
   
-  public void gameOverScreen() {
+  public void gameOverScreen(String causeOfDeath) {
     fill(15);
     rect(0, 0, width, height);
     fill(#e20000);
     textSize(30);
-    text(GAME_OVER, width / 2 - textWidth(GAME_OVER) / 2, height / 2 - 30);
+    text(GAME_OVER, width / 2 - textWidth(GAME_OVER) / 2, height / 2 - 75);
+    textSize(22);
+    text(causeOfDeath, width / 2 - textWidth(causeOfDeath) / 2, height / 2 - 35);
     fill(255);
     String s = FINAL_SCORE + score.get();
     textSize(22);
-    text(s, width / 2 - textWidth(s) / 2, height / 2);
+    text(s, width / 2 - textWidth(s) / 2, height / 2 + 15);
     textSize(14);
-    text(RESTART, width / 2 - textWidth(RESTART) / 2, height / 2 + 40);
+    text(RESTART, width / 2 - textWidth(RESTART) / 2, height / 2 + 45);
   }
   
   public void draw() {
