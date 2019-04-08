@@ -3,7 +3,7 @@ public class UI {
   private Score score;
   
   private final int HP_X = 22;
-  private final int SCORE_X = 200;
+  private final int SCORE_X = width - 100;
   
   public UI(Health health, Score score) {
     this.health = health;
@@ -17,12 +17,12 @@ public class UI {
     
     // draw health bar
     fill(#28e200);
-    rect(35, HP_X + 2, health.health, 10);
+    rect(HP_X + 15, 12, health.health, 10);
     fill(255);
     textSize(14);
     text("HP:", 10, HP_X);
     // draw score
     text("Score:", SCORE_X, 22);
-    text(score.points, SCORE_X + 100, 26);
+    text(score.points, SCORE_X + 45, 22);
   }
 }
