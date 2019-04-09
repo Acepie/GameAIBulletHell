@@ -6,7 +6,6 @@ public class Dungeon {
   public static final int DUNGEONSIZE = 7;
   public static final int TILESIZE = 100;
   public static final int TOTALSIZE = DUNGEONSIZE * TILESIZE;
-  public static final int OBSTACLEGAP = TILESIZE / 3;
   final int CENTER = DUNGEONSIZE / 2;
   final int MAXDEPTH = DUNGEONSIZE;
   final float ROOMRATE = .8;
@@ -27,8 +26,8 @@ public class Dungeon {
     obstacles = new ArrayList<Obstacle>();
     pits = new ArrayList<Pit>();
     generateRooms(CENTER, CENTER, 0, 0);
-    generateObstacles();
     generatePits();
+    generateObstacles();
     breakWalls();
     computeCornerAdjacencies();
   }
@@ -243,12 +242,24 @@ public class Dungeon {
     for (int x = 0; x < DUNGEONSIZE; ++x) {
       for (int y = 0; y < DUNGEONSIZE; ++y) {
         if (rooms[x][y] != null && rng.nextFloat() < OBSTACLERATE) {
-          PVector pos = indexToTopLeft(x, y);
+          PVector loc = indexToTopLeft(x, y);
           int obstacle_count = rng.nextInt(OBSTACLELIMIT);
           for (int o = 0; o < obstacle_count; ++o) {
-            int x_offset = rng.nextInt(TILESIZE);
-            int y_offset = rng.nextInt(TILESIZE);
-            obstacles.add(new Obstacle(pos.x + x_offset, pos.y + y_offset));
+            PVector randomOff = new PVector(rng.nextInt(TILESIZE - Obstacle.SIZE) + Obstacle.SIZE / 2, rng.nextInt(TILESIZE - Obstacle.SIZE) + Obstacle.SIZE / 2);
+
+            // don't put obstacles in pits
+            int tries = 0;
+            while(anyTooClose(PVector.add(loc, randomOff)) && tries < 3) {
+              randomOff = new PVector(rng.nextInt(TILESIZE - Obstacle.SIZE) + Obstacle.SIZE / 2, rng.nextInt(TILESIZE - Obstacle.SIZE) + Obstacle.SIZE / 2);
+              tries++;
+            }
+            
+            if (tries >= 3) {
+              continue;
+            }
+            
+            obstacles.add(new Obstacle(PVector.add(loc, randomOff)));
+            
           }
         }
       }

@@ -4,6 +4,10 @@ public class Obstacle {
   
   PVector position;
   
+  public Obstacle(PVector pos) {
+    position = pos.copy();
+  }
+  
   public Obstacle(float x, float y) {
     position = new PVector(x, y);
   }
