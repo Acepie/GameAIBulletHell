@@ -262,7 +262,7 @@ public class Dungeon {
       // Offset between -30 and 30 in x and y
       PVector randomOff = new PVector(rng.nextInt(60) - 30, rng.nextInt(60) - 30);
       loc.add(randomOff);
-      while (anyTooClose(loc)) {
+      while (anyTooClose(loc) || pitCloseToPlayerSpawn(loc)) {        
         loc = getRandomTile();
         randomOff = new PVector(rng.nextInt(60) - 30, rng.nextInt(60) - 30);
         loc.add(randomOff);
@@ -282,16 +282,22 @@ public class Dungeon {
     return false;
   }
   
+  
+  boolean pitCloseToPlayerSpawn(PVector loc) {
+    float center = CENTER * TILESIZE + TILESIZE / 2;
+    return dist(loc.x, loc.y, center, center) <= PITSIZE;
+  }
+  
   // ASSUME: the two tiles are adjacent and not identical
   int determineDirection(Tile from, Tile to) {
-    if (from.x == to.x && from.y < to.y) return Room.BOT;   // ↓
-    if (from.x < to.x && from.y < to.y) return Room.BOTRIGHT;    // ↘
-    if (from.x == to.x && from.y > to.y) return Room.TOP;   // ↑
-    if (from.x > to.x && from.y > to.y) return Room.TOPLEFT;    // ↖   
-    if (from.x < to.x && from.y == to.y) return Room.RIGHT; // →
-    if (from.x < to.x && from.y > to.y) return Room.TOPRIGHT;  // ↗
-    if (from.x > to.x && from.y == to.y) return Room.LEFT;  // ←
-    if (from.x > to.x && from.y < to.y) return Room.BOTLEFT;   // ↙
+    if (from.x == to.x && from.y < to.y) return Room.BOT;     // ↓
+    if (from.x < to.x && from.y < to.y) return Room.BOTRIGHT; // ↘
+    if (from.x == to.x && from.y > to.y) return Room.TOP;     // ↑
+    if (from.x > to.x && from.y > to.y) return Room.TOPLEFT;  // ↖   
+    if (from.x < to.x && from.y == to.y) return Room.RIGHT;   // →
+    if (from.x < to.x && from.y > to.y) return Room.TOPRIGHT; // ↗
+    if (from.x > to.x && from.y == to.y) return Room.LEFT;    // ←
+    if (from.x > to.x && from.y < to.y) return Room.BOTLEFT;  // ↙
     return -1;
   }
 

@@ -18,7 +18,7 @@ public class UI {
   private final String CTRL = "Controls";
   private final String CTRL_MOVE = "Use arrow keys or WASD to move";
   private final String CTRL_JUMP = "Press SPACE to jump";
-  private final String CTRL_SHOOT = "Click or press SHIFT to shoot";
+  private final String CTRL_SHOOT = "Use mouse to aim, click to shoot";
   
   public UI(Health health, Score score) {
     this.health = health;
