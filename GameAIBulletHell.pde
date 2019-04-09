@@ -4,10 +4,18 @@ ArrayList<Enemy> enemies;
 Player player; 
 UI ui;
 Score score;
+boolean started;
 boolean playerInPit;
+PFont font_minecraftia;
+PFont font_worksans;
 
 final int ENEMIESTOSPAWN = 3;
 final static float GRAVITYSTRENGTH = .02;
+
+void setup() {
+  font_minecraftia = createFont("Minecraftia-Regular.ttf", 40);
+  font_worksans = createFont("WorkSans-Medium.ttf", 22);
+}
 
 // Initialize game state
 void init() {
@@ -17,6 +25,7 @@ void init() {
   playerInPit = false;  
   spawnEnemies();
   score = new Score();
+  started = false;
   ui = new UI(player.health, score);
 }
 
@@ -93,7 +102,9 @@ void settings() {
 }
 
 void draw() {
-  if (isGameOver()) {
+  if (!started) {
+    drawStart();
+  } else if (isGameOver()) {
     drawGameOver();
   } else if (enemies.size() == 0) {
     nextRoom();
@@ -105,6 +116,10 @@ void draw() {
 boolean isGameOver() {
   return player.isDead() || playerInPit;
 }  
+
+void drawStart() {
+  ui.startScreen();
+}
 
 void nextRoom() {
   dungeon = new Dungeon();
@@ -241,6 +256,8 @@ void takeDamageFromObstacles(PVector position, float size, Health health) {
 void keyPressed() {
   if (key == 'r') {
     init();
+  } else if (key == ' ' && !started) {
+    started = true;
   } else if (key == ' ') {
     player.jump();
   } else if (key == CODED && keyCode == SHIFT && player.canShoot()) {
