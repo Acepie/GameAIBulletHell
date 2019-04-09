@@ -8,8 +8,8 @@ public class Room {
   public static final int TOPRIGHT = 5;
   public static final int BOTLEFT = 6;
   public static final int BOTRIGHT = 7;
-  public static final color ROOM_COLOR = #d3d3d3;
-  public static final color WALL_COLOR = #636363;
+  public static final color ROOM_COLOR = #cbe3ed;
+  public static final color WALL_COLOR = #42aad6;
   
   boolean[] doors;
 
