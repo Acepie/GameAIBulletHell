@@ -102,9 +102,9 @@ void settings() {
 }
 
 void draw() {
-  /*if (!started) {
+  if (!started) {
     drawStart();
-  } else */ if (isGameOver()) {
+  } else if (isGameOver()) {
     drawGameOver();
   } else if (enemies.size() == 0) {
     nextRoom();
