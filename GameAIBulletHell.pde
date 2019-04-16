@@ -9,7 +9,7 @@ boolean playerInPit;
 PFont font_minecraftia;
 PFont font_worksans;
 
-final int ENEMIESTOSPAWN = 3;
+final int ENEMIESTOSPAWN = 4;
 final static float GRAVITYSTRENGTH = .02;
 
 void setup() {
