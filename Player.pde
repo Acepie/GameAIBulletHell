@@ -1,6 +1,7 @@
 public class Player {
   public static final int SIZE = 10;
-  final int MAX_SPEED = 5;
+  final int MAX_SPEED = 4;
+  final float ACCELERATION = MAX_SPEED / 6.0;
   final int MAX_HEALTH = 100;
   final float JUMP_POW = .2;
   final int BULLET_RATE = 120; // # milliseconds between each shot
@@ -8,6 +9,7 @@ public class Player {
   PVector position;
   PVector bulletDirection;
   PVector velocity;
+  PVector acceleration;
   Health health;
   private int last_bullet;
 
@@ -15,6 +17,7 @@ public class Player {
     this.position = new PVector(x, y);
     this.bulletDirection = new PVector(1, 0);
     this.velocity = new PVector(0, 0);
+    this.acceleration = new PVector(0, 0);
     this.health = new Health(MAX_HEALTH);
     this.last_bullet = 0;
   }
@@ -50,6 +53,15 @@ public class Player {
     position.add(velocity);
   }
 
+  // Updates velocity based on acceleration
+  public void updateVelocity() {
+    PVector newVelocity = PVector.add(velocity, acceleration);
+    newVelocity.z = 0;
+    newVelocity.limit(MAX_SPEED);
+    velocity.x = newVelocity.x;
+    velocity.y = newVelocity.y;
+  }
+
   // calculate where the front of this player would be if they moved according to their velocity
   public PVector getNextPosition() {
     PVector facing = velocity.copy().normalize().mult(SIZE / 2);
@@ -63,66 +75,70 @@ public class Player {
     }
   }
 
-  // Updates player velocity based on keys pressed
+  // Updates player acceleration based on keys pressed
   public void arrowDown(int key_code) {    
     switch(key_code) {
     case UP:
-      velocity.y = -MAX_SPEED;
+      acceleration.y = -ACCELERATION;
       break;
     case DOWN:
-      velocity.y = MAX_SPEED;
+      acceleration.y = ACCELERATION;
       break;
     case LEFT:
-      velocity.x = -MAX_SPEED;
+      acceleration.x = -ACCELERATION;
       break;
     case RIGHT:
-      velocity.x = MAX_SPEED;
+      acceleration.x = ACCELERATION;
       break;
     }
   }
 
-  // Updates player velocity based on keys released
+  // Updates player acceleration based on keys released
   public void arrowUp(int key_code) {
     switch(key_code) {
     case UP:
     case DOWN:
+      acceleration.y = 0;
       velocity.y = 0;
       break;
     case LEFT:
     case RIGHT:
+      acceleration.x = 0;
       velocity.x = 0;
       break;
     }
   }
 
 
-  // Updates player velocity based on keys pressed
+  // Updates player acceleration based on keys pressed
   public void arrowDown(char key) {    
     switch(key) {
     case 'w':
-      velocity.y = -MAX_SPEED;
+      acceleration.y = -ACCELERATION;
       break;
     case 's':
-      velocity.y = MAX_SPEED;
+      acceleration.y = ACCELERATION;
       break;
     case 'a':
-      velocity.x = -MAX_SPEED;
+      acceleration.x = -ACCELERATION;
       break;
     case 'd':
-      velocity.x = MAX_SPEED;
+      acceleration.x = ACCELERATION;
       break;
     }
   }
 
-  // Updates player velocity based on keys released
+  // Updates player acceleration based on keys released
   public void arrowUp(char key) {
     switch(key) {
     case 'w':
     case 's':
+      acceleration.y = 0;
       velocity.y = 0;
       break;
     case 'a':
     case 'd':
+      acceleration.x = 0;
       velocity.x = 0;
       break;
     }

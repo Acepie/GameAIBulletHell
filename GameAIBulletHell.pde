@@ -230,6 +230,7 @@ void movePlayer() {
   } else { // Apply downward velocity but don't pass wall
     player.position.z += player.velocity.z;
   }
+  player.updateVelocity();
 }
 
 // Applies gravity to velocity and resets z position to floor if appropriate. Returns true if object fell into pit.
