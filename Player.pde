@@ -50,9 +50,10 @@ public class Player {
     position.add(velocity);
   }
 
-  // calculate where this player would be if it moved in the given direction
+  // calculate where the front of this player would be if they moved according to their velocity
   public PVector getNextPosition() {
-    return PVector.add(position, velocity);
+    PVector facing = velocity.copy().normalize().mult(SIZE / 2);
+    return PVector.add(position, velocity).add(facing);
   }
 
   // Attempt to jump
